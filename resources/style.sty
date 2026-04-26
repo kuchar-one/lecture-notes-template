@@ -1,0 +1,680 @@
+\ProvidesPackage{resources/style}[2026/04/26 Custom Lecture Notes Style]
+
+\newif\iflangcz
+\langcztrue
+
+% ==============================================================================
+%                              Mathematics
+% ==============================================================================
+\RequirePackage{amsmath,amsthm}
+\RequirePackage{mathtools}
+\RequirePackage{mathrsfs}
+\RequirePackage{physics}
+\RequirePackage{dsfont}
+\RequirePackage{empheq}
+\RequirePackage{multicol}
+\RequirePackage[
+  top=1.4cm,
+  bottom=0.2cm,
+  left=0.7cm,
+  right=1cm,
+  headheight=24pt,
+  headsep=1em,
+  footskip=0em
+]{geometry}
+
+% ==============================================================================
+%                              Typography
+% ==============================================================================
+\RequirePackage{fontspec}
+\setmainfont[
+  Ligatures = TeX,
+  Ligatures = {Common, Discretionary, Historic},
+  Numbers = OldStyle,
+]{STIX Two Text}
+
+% Modern geometric sans-serif (Oswald)
+\setsansfont[Path=fonts/, UprightFont=Oswald.ttf, BoldFont=Oswald.ttf, BoldFeatures={Weight=Bold}]{Oswald}
+\newfontfamily\titlefont[Path=fonts/, UprightFont=Oswald.ttf, BoldFont=Oswald.ttf, BoldFeatures={Weight=Bold}]{Oswald}
+
+\RequirePackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+\setmathfont{STIX Two Math}
+
+\RequirePackage{setspace}
+\setstretch{1.15}
+
+\RequirePackage{microtype}
+
+% ==============================================================================
+%                              Language
+% ==============================================================================
+\iflangcz
+  \RequirePackage[czech]{babel}
+\else
+  \RequirePackage[english]{babel}
+\fi
+
+\RequirePackage[autostyle=true]{csquotes}
+
+% ==============================================================================
+%                              Colors - Blue/Purple Palette (more distinct)
+% ==============================================================================
+\RequirePackage{xcolor}
+
+% Primary blues
+\definecolor{accent}{HTML}{4a7eb8}
+\definecolor{accentdark}{HTML}{2c5282}
+
+% Theorem: warm sky blue
+\definecolor{thmback}{HTML}{f0f7ff}
+\definecolor{thmline}{HTML}{5a9bd4}
+
+% Definition: cool steel blue  
+\definecolor{defback}{HTML}{f5f8fc}
+\definecolor{defline}{HTML}{4a6fa5}
+
+% Note: distinct lavender purple
+\definecolor{noteback}{HTML}{f8f5ff}
+\definecolor{noteline}{HTML}{8b7cb8}
+
+% Problem: teal accent
+\definecolor{probcolor}{HTML}{3d8b8b}
+\definecolor{probback}{HTML}{f0fafa}
+\definecolor{probline}{HTML}{4a9999}
+
+% Page elements
+\definecolor{headtext}{HTML}{4a5568}
+\definecolor{rulecolor}{HTML}{5a9bd4}
+% Figure pop color
+\definecolor{figline}{HTML}{d6336c}
+
+
+
+% ==============================================================================
+%                              Beautiful Boxes
+% ==============================================================================
+\RequirePackage[most]{tcolorbox}
+
+\tcbset{
+  % Theorem style
+  mythm/.style={
+    enhanced,
+    breakable,
+    boxrule=0pt,
+    frame hidden,
+    borderline west={3pt}{0pt}{thmline},
+    interior style={left color=thmback, right color=white},
+    arc=0pt,
+    left=10pt,
+    right=0pt,
+    top=2.5pt,
+    bottom=2.5pt,
+    before skip=0pt,
+    after skip=0pt,
+    fonttitle=\titlefont\bfseries,
+    coltitle=thmline!85!black,
+    attach title to upper,
+    after title={\enspace},
+  },
+  % Definition style  
+  mydef/.style={
+    enhanced,
+    breakable,
+    boxrule=0pt,
+    frame hidden,
+    borderline west={3pt}{0pt}{defline},
+    interior style={left color=defback, right color=white},
+    arc=0pt,
+    left=10pt,
+    right=0pt,
+    top=2.5pt,
+    bottom=2.5pt,
+    before skip=0pt,
+    after skip=0pt,
+    fonttitle=\titlefont\bfseries,
+    coltitle=defline!90!black,
+    attach title to upper,
+    after title={\enspace},
+  },
+  % Note style
+  mynote/.style={
+    enhanced,
+    breakable,
+    boxrule=0pt,
+    frame hidden,
+    borderline west={3pt}{0pt}{noteline},
+    interior style={left color=noteback, right color=white},
+    arc=0pt,
+    left=10pt,
+    right=0pt,
+    top=2.5pt,
+    bottom=2.5pt,
+    before skip=0pt,
+    after skip=0pt,
+    fonttitle=\titlefont\bfseries,
+    coltitle=noteline!90!black,
+    attach title to upper,
+    after title={\enspace},
+  },
+  % Proof style
+  myproof/.style={
+    enhanced,
+    breakable,
+    boxrule=0pt,
+    frame hidden,
+    borderline west={3pt}{0pt}{thmline!30},
+    colback=white,
+    arc=0pt,
+    left=10pt,
+    right=0pt,
+    top=2.5pt,
+    bottom=2.5pt,
+    before skip=0pt,
+    after skip=0pt,
+    fontupper=\small,
+  },
+  % Solution style (pairs with problems)
+  mysolution/.style={
+    enhanced,
+    breakable,
+    boxrule=0pt,
+    frame hidden,
+    borderline west={3pt}{0pt}{probline!40},
+    colback=white,
+    arc=0pt,
+    left=10pt,
+    right=0pt,
+    top=2.5pt,
+    bottom=2.5pt,
+    before skip=0pt,
+    after skip=0pt,
+    fontupper=\small,
+  },
+  % Problem style
+  myproblem/.style={
+    enhanced,
+    breakable,
+    boxrule=0pt,
+    frame hidden,
+    borderline west={3pt}{0pt}{probline},
+    interior style={left color=probback, right color=white},
+    arc=0pt,
+    left=10pt,
+    right=0pt,
+    top=2.5pt,
+    bottom=2.5pt,
+    before skip=0pt,
+    after skip=0pt,
+    fonttitle=\titlefont\bfseries,
+    coltitle=probline!90!black,
+    attach title to upper,
+    after title={\enspace},
+  },
+}
+
+% ==============================================================================
+%                              Graphics & Layout
+% ==============================================================================
+\RequirePackage{tikz}
+\usetikzlibrary{calc}
+\RequirePackage{graphicx}
+\graphicspath{{images/}{img/}}
+\RequirePackage{multicol}
+\RequirePackage{caption}
+% Caption styling for "pop" effect
+\DeclareCaptionFont{figcolor}{\color{figline}}
+\captionsetup[figure]{
+  labelfont={bf,sf,figcolor},
+  font={small},
+  position=bottom,
+  skip=10pt
+}
+\RequirePackage[shortlabels]{enumitem}
+
+\setlist{nosep, leftmargin=1.8em, itemsep=0.25em}
+\setlist[enumerate]{label={\color{accent}\arabic*)}}
+\setlist[itemize]{label={\color{accent}\textbullet}}
+
+% ==============================================================================
+%                              Tables
+% ==============================================================================
+\RequirePackage{array,booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{multirow}
+\renewcommand{\arraystretch}{1.2}
+
+% ==============================================================================
+%                              Headers & Footers
+% ==============================================================================
+\RequirePackage{fancyhdr}
+\RequirePackage{lastpage}
+\RequirePackage{titlesec}
+
+\newcommand{\docname}{Kvantová optika}
+
+\pagestyle{fancy}
+\fancyhf{}
+
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{%
+  \begin{tikzpicture}[overlay, remember picture]
+    \draw[rulecolor, line width=0.5pt] (0,-0.5em) -- (\textwidth,-0.5em);
+  \end{tikzpicture}%
+  {\small\color{headtext}\sffamily
+   \ifodd\value{page}
+     \docname
+   \else
+     \leftmark
+   \fi
+  }%
+}
+\fancyhead[R]{%
+  {\small\color{headtext}\sffamily\thepage}%
+}
+
+\fancyfoot{}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyhead[R]{{\small\color{headtext}\sffamily\thepage}}
+}
+
+% Redefine section mark to include the § symbol in the header
+\renewcommand{\sectionmark}[1]{\markboth{§\,\thesection\quad#1}{}}
+
+% Section styling
+\titleformat{\section}
+  {\normalfont\Large\titlefont\bfseries\color{accentdark}}
+  {}{0pt}
+  {§\,\thesection\quad}
+  [\vspace{0.3em}{\color{rulecolor}\titlerule[1pt]}]
+
+\titleformat{\subsection}
+  {\normalfont\large\titlefont\bfseries\color{accent}}
+  {§\,\thesubsection}{0.6em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\titlefont\bfseries\color{accent!85!black}}
+  {§\,\thesubsubsection}{0.5em}{}
+
+\titlespacing*{\section}{0pt}{1.2em}{0.4em}
+\titlespacing*{\subsection}{0pt}{0.4em}{-0.2em}
+\titlespacing*{\subsubsection}{0pt}{0.4em}{-0.2em}
+
+
+
+% ==============================================================================
+%                              Footnotes (Landau Style)
+% ==============================================================================
+\RequirePackage[perpage, symbol*]{footmisc}
+
+% Custom footnote symbols matching Landau style ( *, †, ‡, §, ¶, ||, **, ††, ‡‡ )
+\DefineFNsymbols{landau}{{\ensuremath\ast}{\ensuremath\dagger}{\ensuremath\ddagger}{\ensuremath\mathsection}{\ensuremath\mathparagraph}{\ensuremath\|}{\ensuremath{\ast\ast}}{\ensuremath{\dagger\dagger}}{\ensuremath{\ddagger\ddagger}}}
+\setfnsymbol{landau}
+\AtBeginDocument{\renewcommand{\thefootnote}{\fnsymbol{footnote}}}
+
+% Stylish footnote formatting
+\renewcommand{\footnoterule}{%
+  \kern -3pt
+  {\color{thmline}\hrule width 2in height 0.4pt}
+  \kern 2.6pt
+}
+
+\makeatletter
+\renewcommand\@makefntext[1]{%
+  \parindent 1em%
+  \noindent
+  \hb@xt@1.8em{\hss\color{accent}\@thefnmark\,}\hspace{0.2em}#1}
+\makeatother
+\RequirePackage{url}
+\RequirePackage{esint}
+\RequirePackage{etoolbox}
+\RequirePackage{upgreek}
+
+% Force minipage footnotes (used by tcolorbox) to use Landau symbols
+\AtBeginDocument{
+  \renewcommand{\thefootnote}{\fnsymbol{footnote}}
+  \renewcommand{\thempfootnote}{\fnsymbol{mpfootnote}}
+}
+
+% ==============================================================================
+%                              Bilingual Names
+% ==============================================================================
+\newcommand{\definitionnameCZ}{Definice}
+\newcommand{\theoremnameCZ}{Věta}
+\newcommand{\lemmanameCZ}{Lemma}
+\newcommand{\problemnameCZ}{Příklad}
+\newcommand{\exercisenameCZ}{Cvičení}
+\newcommand{\propositionnameCZ}{Tvrzení}
+\newcommand{\corollaryynameCZ}{Korolár}
+\newcommand{\notenameCZ}{Poznámka}
+\newcommand{\resultnameCZ}{Důsledek}
+\newcommand{\postulatenameCZ}{Postulát}
+\newcommand{\proofnameCZ}{Důkaz}
+\newcommand{\proofendedCZ}{Tím je důkaz ukončen.}
+\newcommand{\solutionnameCZ}{Řešení}
+\newcommand{\solutionendedCZ}{Fin.}
+\newcommand{\overviewnameCZ}{Přehled}
+\newcommand{\termsnameCZ}{Pojmy}
+
+\newcommand{\definitionnameEN}{Definition}
+\newcommand{\theoremnameEN}{Theorem}
+\newcommand{\lemmanameEN}{Lemma}
+\newcommand{\problemnameEN}{Problem}
+\newcommand{\exercisenameEN}{Exercise}
+\newcommand{\propositionnameEN}{Proposition}
+\newcommand{\corollarynameEN}{Corollary}
+\newcommand{\notenameEN}{Note}
+\newcommand{\resultnameEN}{Result}
+\newcommand{\postulatenameEN}{Postulate}
+\newcommand{\proofnameEN}{Proof}
+\newcommand{\proofendedEN}{This concludes the proof.}
+\newcommand{\solutionnameEN}{Solution}
+\newcommand{\solutionendedEN}{This concludes the solution.}
+\newcommand{\overviewnameEN}{Overview}
+\newcommand{\termsnameEN}{Terms}
+
+\iflangcz
+  \newcommand{\definitionname}{\definitionnameCZ}
+  \newcommand{\theoremname}{\theoremnameCZ}
+  \newcommand{\lemmaname}{\lemmanameCZ}
+  \newcommand{\problemname}{\problemnameCZ}
+  \newcommand{\exercisename}{\exercisenameCZ}
+  \newcommand{\propositionname}{\propositionnameCZ}
+  \newcommand{\corollaryname}{\corollaryynameCZ}
+  \newcommand{\notename}{\notenameCZ}
+  \newcommand{\resultname}{\resultnameCZ}
+  \newcommand{\postulatename}{\postulatenameCZ}
+  \newcommand{\proofenvname}{\proofnameCZ}
+  \newcommand{\proofended}{\proofendedCZ}
+  \newcommand{\solutionname}{\solutionnameCZ}
+  \newcommand{\solutionended}{\solutionendedCZ}
+  \newcommand{\overviewname}{\overviewnameCZ}
+  \newcommand{\termsname}{\termsnameCZ}
+\else
+  \newcommand{\definitionname}{\definitionnameEN}
+  \newcommand{\theoremname}{\theoremnameEN}
+  \newcommand{\lemmaname}{\lemmanameEN}
+  \newcommand{\problemname}{\problemnameEN}
+  \newcommand{\exercisename}{\exercisenameEN}
+  \newcommand{\propositionname}{\propositionnameEN}
+  \newcommand{\corollaryname}{\corollarynameEN}
+  \newcommand{\notename}{\notenameEN}
+  \newcommand{\resultname}{\resultnameEN}
+  \newcommand{\postulatename}{\postulatenameEN}
+  \newcommand{\proofenvname}{\proofnameEN}
+  \newcommand{\proofended}{\proofendedEN}
+  \newcommand{\solutionname}{\solutionnameEN}
+  \newcommand{\solutionended}{\solutionendedEN}
+  \newcommand{\overviewname}{\overviewnameEN}
+  \newcommand{\termsname}{\termsnameEN}
+\fi
+
+% ==============================================================================
+%                              Math Commands
+% ==============================================================================
+\renewcommand{\norm}[1]{\left\Vert#1\right\Vert}
+\renewcommand{\abs}[1]{\left\vert#1\right\vert}
+\renewcommand{\var}{\operatorname{Var}}
+\renewcommand{\trace}[1]{\mathrm{Tr}\left[#1\right]}
+
+\makeatletter
+\renewcommand{\vec}[1]{\symbfup{#1}}
+\makeatother
+
+\newcommand{\deriv}[2]{\frac{\mathrm{d}#1}{\mathrm{d}#2}}
+\newcommand{\pderiv}[2]{\frac{\partial #1}{\partial #2}}
+\renewcommand{\d}{\mathrm{d}}
+\renewcommand{\Re}{\mathfrak{R}\mathfrak{e}}
+\renewcommand{\Im}{\mathfrak{I}\mathfrak{m}}
+\newcommand\unit{\hat{\mathds{1}}}
+
+\newcommand{\N}{\mathds{N}}
+\newcommand{\Z}{\mathds{Z}}
+\newcommand{\R}{\mathds{R}}
+\newcommand{\Q}{\mathds{Q}}
+\newcommand{\C}{\mathds{C}}
+
+% ==============================================================================
+%                              Counters
+% ==============================================================================
+\newcounter{theoremctr}[section]
+\newcounter{definitionctr}[section]
+\newcounter{lemmactr}[section]
+\newcounter{propositionctr}[section]
+\newcounter{corollaryctr}[section]
+\newcounter{notectr}[section]
+\newcounter{problemctr}[section]
+\newcounter{resultctr}[section]
+\newcounter{postulatectr}[section]
+
+\renewcommand{\thetheoremctr}{\thesection.\arabic{theoremctr}}
+\renewcommand{\thedefinitionctr}{\thesection.\arabic{definitionctr}}
+\renewcommand{\thelemmactr}{\thesection.\arabic{lemmactr}}
+\renewcommand{\thepropositionctr}{\thesection.\arabic{propositionctr}}
+\renewcommand{\thecorollaryctr}{\thesection.\arabic{corollaryctr}}
+\renewcommand{\thenotectr}{\thesection.\arabic{notectr}}
+\renewcommand{\theproblemctr}{\thesection.\arabic{problemctr}}
+\renewcommand{\theresultctr}{\thesection.\arabic{resultctr}}
+\renewcommand{\thepostulatectr}{\thesection.\arabic{postulatectr}}
+
+\numberwithin{equation}{section}
+
+% ==============================================================================
+%                              Theorem Environments
+% ==============================================================================
+\newtcolorbox{thmbox}[1][]{mythm, title={#1}}
+\newtcolorbox{defbox}[1][]{mydef, title={#1}}
+\newtcolorbox{notbox}[1][]{mynote, title={#1}}
+\newtcolorbox{proofbox}[1][]{myproof, #1}
+
+% Theorem
+\newenvironment{theorem}[1][\theoremname]{%
+  \refstepcounter{theoremctr}%
+  \begin{thmbox}[#1 \thetheoremctr.]\itshape
+}{\end{thmbox}}
+
+% Lemma
+\newenvironment{lemma}[1][\lemmaname]{%
+  \refstepcounter{lemmactr}%
+  \begin{thmbox}[#1 \thelemmactr.]\itshape
+}{\end{thmbox}}
+
+% Proposition
+\newenvironment{proposition}[1][\propositionname]{%
+  \refstepcounter{propositionctr}%
+  \begin{thmbox}[#1 \thepropositionctr.]\itshape
+}{\end{thmbox}}
+
+% Corollary
+\newenvironment{corollary}[1][\corollaryname]{%
+  \refstepcounter{corollaryctr}%
+  \begin{thmbox}[#1 \thecorollaryctr.]\itshape
+}{\end{thmbox}}
+
+% Result
+\newenvironment{result}[1][\resultname]{%
+  \refstepcounter{resultctr}%
+  \begin{thmbox}[#1 \theresultctr.]\itshape
+}{\end{thmbox}}
+
+% Definition
+\newenvironment{definition}[1][\definitionname]{%
+  \refstepcounter{definitionctr}%
+  \begin{defbox}[#1 \thedefinitionctr.]
+}{\end{defbox}}
+
+% Postulate
+\newenvironment{postulate}[1][\postulatename]{%
+  \refstepcounter{postulatectr}%
+  \begin{defbox}[#1 \thepostulatectr.]
+}{\end{defbox}}
+
+% Note
+\newenvironment{note}[1][\notename]{%
+  \refstepcounter{notectr}%
+  \begin{notbox}[#1 \thenotectr.]
+}{\end{notbox}}
+
+% Problem
+\newtcolorbox{probbox}[1][]{myproblem, title={#1}}
+
+\newenvironment{problem}[1][\problemname]{%
+  \refstepcounter{problemctr}%
+  \begin{probbox}[#1 \theproblemctr.]
+}{\end{probbox}}
+
+% Starred versions
+\newenvironment{theorem*}[1][\theoremname]{\begin{thmbox}[#1.]\itshape}{\end{thmbox}}
+\newenvironment{lemma*}[1][\lemmaname]{\begin{thmbox}[#1.]\itshape}{\end{thmbox}}
+\newenvironment{definition*}[1][\definitionname]{\begin{defbox}[#1.]}{\end{defbox}}
+\newenvironment{note*}[1][\notename]{\begin{notbox}[#1.]}{\end{notbox}}
+\newenvironment{problem*}[1][\problemname]{\begin{probbox}[#1.]}{\end{probbox}}
+
+% ==============================================================================
+%                              Proof Environment
+% ==============================================================================
+\newtcolorbox{solutionbox}[1][]{mysolution, #1}
+
+\renewenvironment{proof}[1][\proofenvname]{%
+  \begin{proofbox}%
+    {\titlefont\itshape\color{thmline}#1.}\enspace\ignorespaces
+}{%
+    \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{thmline}\proofended}\par
+  \end{proofbox}%
+}
+
+\newenvironment{solution}[1][\solutionname]{%
+  \begin{solutionbox}%
+    {\titlefont\itshape\color{probline}#1.}\enspace\ignorespaces
+}{%
+    \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{probline}\solutionended}\par
+  \end{solutionbox}%
+}
+
+% Overview box for section summaries
+\newtcolorbox{overviewbox}[1][]{
+  enhanced,
+  boxrule=0pt,
+  leftrule=3pt,
+  rightrule=0pt,
+  toprule=1.5pt,
+  bottomrule=1.5pt,
+  arc=0pt,
+  outer arc=0pt,
+  colframe=accent,
+  interior style={left color=accent!5, right color=white},
+  title={\overviewname},
+  coltitle=accentdark,
+  fonttitle=\bfseries\sffamily,
+  attach boxed title to top left={yshift=-\tcboxedtitleheight/2, xshift=5mm},
+  boxed title style={
+    colback=accent!5,
+    frame hidden,
+  },
+  after skip=0pt,
+  #1
+}
+
+\newtcolorbox{termsbox}[1][]{
+  enhanced,
+  breakable,
+  boxrule=0pt,
+  leftrule=3pt,
+  rightrule=0pt,
+  toprule=1.5pt,
+  bottomrule=1.5pt,
+  arc=0pt,
+  outer arc=0pt,
+  colframe=accent,
+  interior style={left color=accent!5, right color=white},
+  title={\termsname},
+  coltitle=accentdark,
+  fonttitle=\bfseries\sffamily,
+  attach boxed title to top right={yshift=-\tcboxedtitleheight/2, xshift=-5mm},
+  boxed title style={
+    colback=white,
+    frame hidden,
+  },
+  top=4pt,
+  % borderline north removed for solid top rule matching bottom
+  before skip=0pt,
+  #1
+}
+
+% Figure box style - "Floating Card" with Pop
+\newtcolorbox{figurebox}[1][]{
+  enhanced,
+  boxrule=0pt,
+  frame hidden,
+  colback=white,
+  borderline west={3pt}{0pt}{figline},
+  arc=0pt,
+  % Spacing
+  left=15pt,
+  right=15pt,
+  top=10pt,
+  bottom=10pt,
+  before skip=0pt,
+  after skip=0pt,
+  #1
+}
+
+
+% ==============================================================================
+%                              Document Settings
+% ==============================================================================
+\setlength\parindent{0pt}
+\setlength\parskip{0.5em}
+
+% ==============================================================================
+%                              Title Page
+% ==============================================================================
+\definecolor{titleblue}{HTML}{5a9bd4}
+\definecolor{titledark}{HTML}{2c5282}
+
+% Custom title page with geometric design
+% Usage: \maketitlepage{Title}{Subtitle}{Author}{Date}
+\newcommand{\maketitlepage}[4]{%
+  \thispagestyle{empty}%
+  \begin{tikzpicture}[remember picture, overlay]
+    % Full light blue background (extended to avoid gaps)
+    \fill[titleblue] ([xshift=-2mm,yshift=-2mm]current page.south west) rectangle ([xshift=2mm,yshift=2mm]current page.north east);
+    
+    % Subtle darker corner accent - bottom left
+    \fill[titledark] 
+      (current page.south west) -- 
+      ([yshift=8cm]current page.south west) -- 
+      ([xshift=8cm]current page.south west) -- cycle;
+      
+    % Thin white geometric lines
+    \draw[white, line width=1.5pt] 
+      ([xshift=3cm, yshift=3cm]current page.south west) -- 
+      ([xshift=3cm, yshift=12cm]current page.south west) --
+      ([xshift=12cm, yshift=3cm]current page.south west) -- cycle;
+
+    % Small circle accent (top vertex of the white triangle)
+    \fill[white] ([xshift=3cm, yshift=12cm]current page.south west) circle (5pt);
+
+    % Title Content - aligned exactly 3cm from the right edge
+    \node[anchor=north east, inner sep=0pt] 
+      at ([xshift=-3cm, yshift=-4cm]current page.north east) {
+        \begin{minipage}{15cm}
+          \raggedleft
+          % Optical alignment: larger fonts have larger sidebearings, so we nudge it right slightly
+          {\fontsize{72}{84}\selectfont\titlefont\bfseries\color{white}#1\hspace*{-0.04em}\par}
+          \vspace{1.2cm}
+          {\fontsize{36}{42}\selectfont\titlefont\color{white!90}#2\par}
+          \vspace{3cm}
+          {\fontsize{20}{24}\selectfont\color{white!80}\bfseries#3\par}
+          \vspace{0.5cm}
+          {\fontsize{16}{20}\selectfont\color{white!70}#4\par}
+        \end{minipage}
+    };
+  \end{tikzpicture}%
+  \newpage
+  \setcounter{page}{1}%
+}
+
+% ==============================================================================
