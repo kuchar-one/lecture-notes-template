@@ -1,13 +1,14 @@
 % ==============================================================================
 %                   Premium Mathematical Lecture Notes Template
 % ==============================================================================
-% Build: latexmk | Language: \langcztrue (CZ) or \langczfalse (EN)
+% Build: latexmk | Language: [english] or [czech] in \usepackage
 % ==============================================================================
 
 \documentclass[12pt, letterpaper]{article}
 
 % Import all styling, math, and custom commands
-\usepackage{resources/style}
+% Set your language here: [english] or [czech]
+\usepackage[english]{resources/style}
 
 % ==============================================================================
 \begin{document}
@@ -15,13 +16,20 @@
 
 % --- Title Page ---
 \maketitlepage
-  {Lecture Notes}
-  {Subject Title}
-  {Author Name}
-  {\today}
+{Lecture Notes}
+{Subject Title}
+{Author Name}
+{\today}
 
 % --- Content ---
 \section{Introduction}
+
+\begin{objective}
+  \begin{itemize}
+    \item Understand the core principles of the Prism Clarity aesthetic.
+    \item Learn to use the new minimalist table and figure environments.
+  \end{itemize}
+\end{objective}
 
 \begin{overviewbox}
   Brief summary or overview of the current section.
@@ -39,13 +47,47 @@
   This is a sample theorem.
 \end{theorem}
 
+\begin{intuition}
+  Before jumping into the rigorous proof, here is the basic idea of why the theorem holds true.
+\end{intuition}
+
 \begin{proof}
-  This is the proof of the theorem.
+  This is the rigorous proof of the theorem.
 \end{proof}
+
+\begin{algo}[Search Algorithm]
+  \begin{algorithmic}[1]
+    \Require A list of numbers $L$
+    \Ensure The maximum number in $L$
+    \State $max \gets L[0]$
+    \For{\textbf{each} $x \in L$}
+      \If{$x > max$}
+        \State $max \gets x$
+      \EndIf
+    \EndFor
+    \State \Return $max$
+  \end{algorithmic}
+\end{algo}
+
+\begin{application}[Engineering]
+  This theorem is heavily used in structural engineering to calculate load capacities.
+\end{application}
+
+\begin{history}
+  First discovered in 1894, this concept revolutionized the field.
+\end{history}
+
+\begin{pitfall}[Common Error]
+  Do not confuse this with the secondary principle, which only applies in a vacuum!
+\end{pitfall}
 
 \begin{note}
   This is an important note or remark.
 \end{note}
+
+\begin{keyreference}
+  \fullcite{gottesman2001encoding}
+\end{keyreference}
 
 \begin{problem}[Sample Problem]
   Solve for $x$.
@@ -54,6 +96,49 @@
 \begin{solution}
   The solution goes here.
 \end{solution}
+
+\subsection{Minimalist Aesthetics}
+
+Here is an example of a minimalist table using alternating row shading and clean rules.
+
+\begin{table}[h]
+  \centering
+  \rowcolors{2}{gray!10}{white}
+  \begin{tabular}{llc}
+    \toprule
+    \textbf{Category} & \textbf{Environment} & \textbf{Color Group} \\
+    \midrule
+    Concepts          & Theorem, Definition  & Cobalt \& Cyan       \\
+    Actions           & Problem, Pitfall     & Purple \& Coral      \\
+    Context           & History, Reference   & Gold \& Indigo       \\
+    \bottomrule
+  \end{tabular}
+  \caption{A clean, minimalist table without vertical rules.}
+\end{table}
+
+Here is an example of a clean, minimalist geometric figure (Venn Diagram) using TikZ.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    % Left circle
+    \draw[thick, accent] (0,0) circle (1.5cm);
+    \node[accentdark] at (-0.8, 0) {\textbf{Theory}};
+
+    % Right circle
+    \draw[thick, probcolor] (1.5,0) circle (1.5cm);
+    \node[probcolor!80!black] at (2.3, 0) {\textbf{Practice}};
+
+    % Intersection
+    \node[font=\bfseries, text=titleblue] at (0.75, 0) {Notes};
+  \end{tikzpicture}
+  \caption{Venn diagram demonstrating the minimalist figure style.}
+\end{figure}
+
+\begin{summary}
+  We have successfully introduced all 8 new environments and demonstrated the Prism Clarity aesthetic!
+\end{summary}
+
 
 % ==============================================================================
 \end{document}

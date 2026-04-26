@@ -1,7 +1,10 @@
 \ProvidesPackage{resources/style}[2026/04/26 Custom Lecture Notes Style]
 
 \newif\iflangcz
-\langcztrue
+\DeclareOption{czech}{\langcztrue}
+\DeclareOption{english}{\langczfalse}
+\ExecuteOptions{english}
+\ProcessOptions\relax
 
 % ==============================================================================
 %                              Mathematics
@@ -13,6 +16,10 @@
 \RequirePackage{dsfont}
 \RequirePackage{empheq}
 \RequirePackage{multicol}
+\RequirePackage{algorithm}
+\RequirePackage{algpseudocode}
+\RequirePackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{resources/references.bib}
 \RequirePackage[
   top=1.4cm,
   bottom=0.2cm,
@@ -33,9 +40,9 @@
   Numbers = OldStyle,
 ]{STIX Two Text}
 
-% Modern geometric sans-serif (Oswald)
-\setsansfont[Path=fonts/, UprightFont=Oswald.ttf, BoldFont=Oswald.ttf, BoldFeatures={Weight=Bold}]{Oswald}
-\newfontfamily\titlefont[Path=fonts/, UprightFont=Oswald.ttf, BoldFont=Oswald.ttf, BoldFeatures={Weight=Bold}]{Oswald}
+% Modern geometric sans-serif (Overpass)
+\setsansfont[Path=fonts/, UprightFont=Overpass-Regular.ttf, BoldFont=Overpass-Bold.ttf, ItalicFont=Overpass-Italic.ttf, BoldItalicFont=Overpass-BoldItalic.ttf]{Overpass}
+\newfontfamily\titlefont[Path=fonts/, UprightFont=Overpass-Regular.ttf, BoldFont=Overpass-Bold.ttf, ItalicFont=Overpass-Italic.ttf, BoldItalicFont=Overpass-BoldItalic.ttf]{Overpass}
 
 \RequirePackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
 \setmathfont{STIX Two Math}
@@ -59,34 +66,66 @@
 % ==============================================================================
 %                              Colors - Blue/Purple Palette (more distinct)
 % ==============================================================================
-\RequirePackage{xcolor}
+\RequirePackage[table]{xcolor}
 
-% Primary blues
-\definecolor{accent}{HTML}{4a7eb8}
-\definecolor{accentdark}{HTML}{2c5282}
+% Primary (Cobalt Blue)
+\definecolor{accent}{HTML}{0284C7}
+\definecolor{accentdark}{HTML}{0369A1}
 
-% Theorem: warm sky blue
-\definecolor{thmback}{HTML}{f0f7ff}
-\definecolor{thmline}{HTML}{5a9bd4}
+% Theorem: Sky Blue
+\definecolor{thmback}{HTML}{f0f9ff}
+\definecolor{thmline}{HTML}{0ea5e9}
 
-% Definition: cool steel blue  
-\definecolor{defback}{HTML}{f5f8fc}
-\definecolor{defline}{HTML}{4a6fa5}
+% Definition: Cyan
+\definecolor{defback}{HTML}{ecfeff}
+\definecolor{defline}{HTML}{06b6d4}
 
-% Note: distinct lavender purple
-\definecolor{noteback}{HTML}{f8f5ff}
-\definecolor{noteline}{HTML}{8b7cb8}
+% Note: Slate
+\definecolor{noteback}{HTML}{f8fafc}
+\definecolor{noteline}{HTML}{64748b}
 
-% Problem: teal accent
-\definecolor{probcolor}{HTML}{3d8b8b}
-\definecolor{probback}{HTML}{f0fafa}
-\definecolor{probline}{HTML}{4a9999}
+% Problem: Fuchsia/Purple
+\definecolor{probcolor}{HTML}{c026d3}
+\definecolor{probback}{HTML}{fdf4ff}
+\definecolor{probline}{HTML}{c026d3}
+
+% Objectives: Emerald
+\definecolor{objback}{HTML}{f0fdf4}
+\definecolor{objline}{HTML}{22c55e}
+
+% Intuition: Amber
+\definecolor{intback}{HTML}{fffbeb}
+\definecolor{intline}{HTML}{f59e0b}
+
+% Algorithm: Violet
+\definecolor{algback}{HTML}{faf5ff}
+\definecolor{algline}{HTML}{9333ea}
+
+% Application: Orange
+\definecolor{appback}{HTML}{fff7ed}
+\definecolor{appline}{HTML}{f97316}
+
+% History: Warm Gold
+\definecolor{histback}{HTML}{fefce8}
+\definecolor{histline}{HTML}{eab308}
+
+% Pitfall: Coral Red
+\definecolor{pitfallback}{HTML}{fff1f2}
+\definecolor{pitfallline}{HTML}{e11d48}
+
+% Reference: Muted Indigo
+\definecolor{refback}{HTML}{eef2ff}
+\definecolor{refline}{HTML}{6366f1}
+
+% Summary: Vivid Teal
+\definecolor{sumback}{HTML}{f0fdfa}
+\definecolor{sumline}{HTML}{14b8a6}
 
 % Page elements
-\definecolor{headtext}{HTML}{4a5568}
-\definecolor{rulecolor}{HTML}{5a9bd4}
+\definecolor{headtext}{HTML}{334155}
+\definecolor{rulecolor}{HTML}{38BDF8}
 % Figure pop color
-\definecolor{figline}{HTML}{d6336c}
+\definecolor{figline}{HTML}{e11d48}
 
 
 
@@ -98,118 +137,127 @@
 \tcbset{
   % Theorem style
   mythm/.style={
-    enhanced,
-    breakable,
-    boxrule=0pt,
-    frame hidden,
-    borderline west={3pt}{0pt}{thmline},
-    interior style={left color=thmback, right color=white},
-    arc=0pt,
-    left=10pt,
-    right=0pt,
-    top=2.5pt,
-    bottom=2.5pt,
-    before skip=0pt,
-    after skip=0pt,
-    fonttitle=\titlefont\bfseries,
-    coltitle=thmline!85!black,
-    attach title to upper,
-    after title={\enspace},
-  },
+      enhanced,
+      breakable,
+      boxrule=0pt,
+      frame hidden,
+      borderline west={3pt}{0pt}{thmline},
+      interior style={left color=thmback, right color=white},
+      arc=0pt,
+      left=10pt,
+      right=0pt,
+      top=2.5pt,
+      bottom=2.5pt,
+      before skip=0pt,
+      after skip=0pt,
+      fonttitle=\titlefont\bfseries,
+      coltitle=thmline!85!black,
+      attach title to upper,
+      after title={\enspace},
+    },
   % Definition style  
   mydef/.style={
-    enhanced,
-    breakable,
-    boxrule=0pt,
-    frame hidden,
-    borderline west={3pt}{0pt}{defline},
-    interior style={left color=defback, right color=white},
-    arc=0pt,
-    left=10pt,
-    right=0pt,
-    top=2.5pt,
-    bottom=2.5pt,
-    before skip=0pt,
-    after skip=0pt,
-    fonttitle=\titlefont\bfseries,
-    coltitle=defline!90!black,
-    attach title to upper,
-    after title={\enspace},
-  },
+      enhanced,
+      breakable,
+      boxrule=0pt,
+      frame hidden,
+      borderline west={3pt}{0pt}{defline},
+      interior style={left color=defback, right color=white},
+      arc=0pt,
+      left=10pt,
+      right=0pt,
+      top=2.5pt,
+      bottom=2.5pt,
+      before skip=0pt,
+      after skip=0pt,
+      fonttitle=\titlefont\bfseries,
+      coltitle=defline!90!black,
+      attach title to upper,
+      after title={\enspace},
+    },
   % Note style
   mynote/.style={
-    enhanced,
-    breakable,
-    boxrule=0pt,
-    frame hidden,
-    borderline west={3pt}{0pt}{noteline},
-    interior style={left color=noteback, right color=white},
-    arc=0pt,
-    left=10pt,
-    right=0pt,
-    top=2.5pt,
-    bottom=2.5pt,
-    before skip=0pt,
-    after skip=0pt,
-    fonttitle=\titlefont\bfseries,
-    coltitle=noteline!90!black,
-    attach title to upper,
-    after title={\enspace},
-  },
+      enhanced,
+      breakable,
+      boxrule=0pt,
+      frame hidden,
+      borderline west={3pt}{0pt}{noteline},
+      interior style={left color=noteback, right color=white},
+      arc=0pt,
+      left=10pt,
+      right=0pt,
+      top=2.5pt,
+      bottom=2.5pt,
+      before skip=0pt,
+      after skip=0pt,
+      fonttitle=\titlefont\bfseries,
+      coltitle=noteline!90!black,
+      attach title to upper,
+      after title={\enspace},
+    },
   % Proof style
   myproof/.style={
-    enhanced,
-    breakable,
-    boxrule=0pt,
-    frame hidden,
-    borderline west={3pt}{0pt}{thmline!30},
-    colback=white,
-    arc=0pt,
-    left=10pt,
-    right=0pt,
-    top=2.5pt,
-    bottom=2.5pt,
-    before skip=0pt,
-    after skip=0pt,
-    fontupper=\small,
-  },
+      enhanced,
+      breakable,
+      boxrule=0pt,
+      frame hidden,
+      borderline west={3pt}{0pt}{thmline!30},
+      colback=white,
+      arc=0pt,
+      left=10pt,
+      right=0pt,
+      top=2.5pt,
+      bottom=2.5pt,
+      before skip=0pt,
+      after skip=0pt,
+      fontupper=\small,
+    },
   % Solution style (pairs with problems)
   mysolution/.style={
-    enhanced,
-    breakable,
-    boxrule=0pt,
-    frame hidden,
-    borderline west={3pt}{0pt}{probline!40},
-    colback=white,
-    arc=0pt,
-    left=10pt,
-    right=0pt,
-    top=2.5pt,
-    bottom=2.5pt,
-    before skip=0pt,
-    after skip=0pt,
-    fontupper=\small,
-  },
+      enhanced,
+      breakable,
+      boxrule=0pt,
+      frame hidden,
+      borderline west={3pt}{0pt}{probline!40},
+      colback=white,
+      arc=0pt,
+      left=10pt,
+      right=0pt,
+      top=2.5pt,
+      bottom=2.5pt,
+      before skip=0pt,
+      after skip=0pt,
+      fontupper=\small,
+    },
   % Problem style
   myproblem/.style={
-    enhanced,
-    breakable,
-    boxrule=0pt,
-    frame hidden,
-    borderline west={3pt}{0pt}{probline},
-    interior style={left color=probback, right color=white},
-    arc=0pt,
-    left=10pt,
-    right=0pt,
-    top=2.5pt,
-    bottom=2.5pt,
-    before skip=0pt,
-    after skip=0pt,
-    fonttitle=\titlefont\bfseries,
-    coltitle=probline!90!black,
-    attach title to upper,
-    after title={\enspace},
-  },
+      enhanced,
+      breakable,
+      boxrule=0pt,
+      frame hidden,
+      borderline west={3pt}{0pt}{probline},
+      interior style={left color=probback, right color=white},
+      arc=0pt,
+      left=10pt,
+      right=0pt,
+      top=2.5pt,
+      bottom=2.5pt,
+      before skip=0pt,
+      after skip=0pt,
+      fonttitle=\titlefont\bfseries,
+      coltitle=probline!90!black,
+      attach title to upper,
+      after title={\enspace},
+    },
+  % New Environments
+  myobjective/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{objline}, interior style={left color=objback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=objline!90!black, attach title to upper, after title={\enspace}},
+  myintuition/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{intline}, interior style={left color=intback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=intline!90!black, attach title to upper, after title={\enspace}},
+  myalgorithm/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{algline}, interior style={left color=algback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=algline!90!black, attach title to upper, after title={\enspace}},
+  myapplication/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{appline}, interior style={left color=appback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=appline!90!black, attach title to upper, after title={\enspace}},
+  myhistory/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{histline}, interior style={left color=histback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=histline!90!black, attach title to upper, after title={\enspace}},
+  mypitfall/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{pitfallline}, interior style={left color=pitfallback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=pitfallline!90!black, attach title to upper, after title={\enspace}},
+  myreference/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{refline}, interior style={left color=refback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=refline!90!black, attach title to upper, after title={\enspace}},
+  mysummary/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{sumline}, interior style={left color=sumback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=sumline!90!black, attach title to upper, after title={\enspace}},
 }
 
 % ==============================================================================
@@ -250,7 +298,11 @@
 \RequirePackage{lastpage}
 \RequirePackage{titlesec}
 
-\newcommand{\docname}{Kvantová optika}
+\iflangcz
+  \newcommand{\docname}{Poznámky z přednášek}
+\else
+  \newcommand{\docname}{Lecture Notes}
+\fi
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -261,11 +313,11 @@
     \draw[rulecolor, line width=0.5pt] (0,-0.5em) -- (\textwidth,-0.5em);
   \end{tikzpicture}%
   {\small\color{headtext}\sffamily
-   \ifodd\value{page}
-     \docname
-   \else
-     \leftmark
-   \fi
+    \ifodd\value{page}
+      \docname
+    \else
+      \leftmark
+    \fi
   }%
 }
 \fancyhead[R]{%
@@ -285,18 +337,18 @@
 
 % Section styling
 \titleformat{\section}
-  {\normalfont\Large\titlefont\bfseries\color{accentdark}}
-  {}{0pt}
-  {§\,\thesection\quad}
-  [\vspace{0.3em}{\color{rulecolor}\titlerule[1pt]}]
+{\normalfont\Large\titlefont\bfseries\color{accentdark}}
+{}{0pt}
+{§\,\thesection\quad}
+[\vspace{0.3em}{\color{rulecolor}\titlerule[1pt]}]
 
 \titleformat{\subsection}
-  {\normalfont\large\titlefont\bfseries\color{accent}}
-  {§\,\thesubsection}{0.6em}{}
+{\normalfont\large\titlefont\bfseries\color{accent}}
+{§\,\thesubsection}{0.6em}{}
 
 \titleformat{\subsubsection}
-  {\normalfont\normalsize\titlefont\bfseries\color{accent!85!black}}
-  {§\,\thesubsubsection}{0.5em}{}
+{\normalfont\normalsize\titlefont\bfseries\color{accent!85!black}}
+{§\,\thesubsubsection}{0.5em}{}
 
 \titlespacing*{\section}{0pt}{1.2em}{0.4em}
 \titlespacing*{\subsection}{0pt}{0.4em}{-0.2em}
@@ -317,7 +369,7 @@
 % Stylish footnote formatting
 \renewcommand{\footnoterule}{%
   \kern -3pt
-  {\color{thmline}\hrule width 2in height 0.4pt}
+    {\color{thmline}\hrule width 2in height 0.4pt}
   \kern 2.6pt
 }
 
@@ -357,6 +409,14 @@
 \newcommand{\solutionendedCZ}{Fin.}
 \newcommand{\overviewnameCZ}{Přehled}
 \newcommand{\termsnameCZ}{Pojmy}
+\newcommand{\objectivenameCZ}{Cíle výuky}
+\newcommand{\intuitionnameCZ}{Intuice důkazu}
+\newcommand{\algorithmnameCZ}{Algoritmus}
+\newcommand{\applicationnameCZ}{Aplikace}
+\newcommand{\historynameCZ}{Historická poznámka}
+\newcommand{\pitfallnameCZ}{Častá chyba}
+\newcommand{\referencenameCZ}{Klíčová reference}
+\newcommand{\summarynameCZ}{Shrnutí}
 
 \newcommand{\definitionnameEN}{Definition}
 \newcommand{\theoremnameEN}{Theorem}
@@ -374,6 +434,14 @@
 \newcommand{\solutionendedEN}{This concludes the solution.}
 \newcommand{\overviewnameEN}{Overview}
 \newcommand{\termsnameEN}{Terms}
+\newcommand{\objectivenameEN}{Learning Objectives}
+\newcommand{\intuitionnameEN}{Proof Intuition}
+\newcommand{\algorithmnameEN}{Algorithm}
+\newcommand{\applicationnameEN}{Application}
+\newcommand{\historynameEN}{Historical Note}
+\newcommand{\pitfallnameEN}{Pitfall}
+\newcommand{\referencenameEN}{Key Reference}
+\newcommand{\summarynameEN}{Summary}
 
 \iflangcz
   \newcommand{\definitionname}{\definitionnameCZ}
@@ -392,6 +460,14 @@
   \newcommand{\solutionended}{\solutionendedCZ}
   \newcommand{\overviewname}{\overviewnameCZ}
   \newcommand{\termsname}{\termsnameCZ}
+  \newcommand{\objectivename}{\objectivenameCZ}
+  \newcommand{\intuitionname}{\intuitionnameCZ}
+  \newcommand{\algorithmname}{\algorithmnameCZ}
+  \newcommand{\applicationname}{\applicationnameCZ}
+  \newcommand{\historyname}{\historynameCZ}
+  \newcommand{\pitfallname}{\pitfallnameCZ}
+  \newcommand{\referencename}{\referencenameCZ}
+  \newcommand{\summaryname}{\summarynameCZ}
 \else
   \newcommand{\definitionname}{\definitionnameEN}
   \newcommand{\theoremname}{\theoremnameEN}
@@ -409,6 +485,14 @@
   \newcommand{\solutionended}{\solutionendedEN}
   \newcommand{\overviewname}{\overviewnameEN}
   \newcommand{\termsname}{\termsnameEN}
+  \newcommand{\objectivename}{\objectivenameEN}
+  \newcommand{\intuitionname}{\intuitionnameEN}
+  \newcommand{\algorithmname}{\algorithmnameEN}
+  \newcommand{\applicationname}{\applicationnameEN}
+  \newcommand{\historyname}{\historynameEN}
+  \newcommand{\pitfallname}{\pitfallnameEN}
+  \newcommand{\referencename}{\referencenameEN}
+  \newcommand{\summaryname}{\summarynameEN}
 \fi
 
 % ==============================================================================
@@ -448,6 +532,14 @@
 \newcounter{problemctr}[section]
 \newcounter{resultctr}[section]
 \newcounter{postulatectr}[section]
+\newcounter{objectivectr}[section]
+\newcounter{intuitionctr}[section]
+\newcounter{algorithmctr}[section]
+\newcounter{applicationctr}[section]
+\newcounter{historyctr}[section]
+\newcounter{pitfallctr}[section]
+\newcounter{referencectr}[section]
+\newcounter{summaryctr}[section]
 
 \renewcommand{\thetheoremctr}{\thesection.\arabic{theoremctr}}
 \renewcommand{\thedefinitionctr}{\thesection.\arabic{definitionctr}}
@@ -458,6 +550,14 @@
 \renewcommand{\theproblemctr}{\thesection.\arabic{problemctr}}
 \renewcommand{\theresultctr}{\thesection.\arabic{resultctr}}
 \renewcommand{\thepostulatectr}{\thesection.\arabic{postulatectr}}
+\renewcommand{\theobjectivectr}{\thesection.\arabic{objectivectr}}
+\renewcommand{\theintuitionctr}{\thesection.\arabic{intuitionctr}}
+\renewcommand{\thealgorithmctr}{\thesection.\arabic{algorithmctr}}
+\renewcommand{\theapplicationctr}{\thesection.\arabic{applicationctr}}
+\renewcommand{\thehistoryctr}{\thesection.\arabic{historyctr}}
+\renewcommand{\thepitfallctr}{\thesection.\arabic{pitfallctr}}
+\renewcommand{\thereferencectr}{\thesection.\arabic{referencectr}}
+\renewcommand{\thesummaryctr}{\thesection.\arabic{summaryctr}}
 
 \numberwithin{equation}{section}
 
@@ -525,6 +625,55 @@
   \begin{probbox}[#1 \theproblemctr.]
 }{\end{probbox}}
 
+% New Environments
+\newtcolorbox{objbox}[1][]{myobjective, title={#1}}
+\newenvironment{objective}[1][\objectivename]{%
+  \refstepcounter{objectivectr}%
+  \begin{objbox}[#1 \theobjectivectr.]
+}{\end{objbox}}
+
+\newtcolorbox{intbox}[1][]{myintuition, title={#1}}
+\newenvironment{intuition}[1][\intuitionname]{%
+  \refstepcounter{intuitionctr}%
+  \begin{intbox}[#1 \theintuitionctr.]
+}{\end{intbox}}
+
+\newtcolorbox{algbox}[1][]{myalgorithm, title={#1}}
+\newenvironment{algo}[1][\algorithmname]{%
+  \refstepcounter{algorithmctr}%
+  \begin{algbox}[#1 \thealgorithmctr.]
+}{\end{algbox}}
+
+\newtcolorbox{appbox}[1][]{myapplication, title={#1}}
+\newenvironment{application}[1][\applicationname]{%
+  \refstepcounter{applicationctr}%
+  \begin{appbox}[#1 \theapplicationctr.]
+}{\end{appbox}}
+
+\newtcolorbox{histbox}[1][]{myhistory, title={#1}}
+\newenvironment{history}[1][\historyname]{%
+  \refstepcounter{historyctr}%
+  \begin{histbox}[#1 \thehistoryctr.]
+}{\end{histbox}}
+
+\newtcolorbox{pitbox}[1][]{mypitfall, title={#1}}
+\newenvironment{pitfall}[1][\pitfallname]{%
+  \refstepcounter{pitfallctr}%
+  \begin{pitbox}[#1 \thepitfallctr.]
+}{\end{pitbox}}
+
+\newtcolorbox{refbox}[1][]{myreference, title={#1}}
+\newenvironment{keyreference}[1][\referencename]{%
+  \refstepcounter{referencectr}%
+  \begin{refbox}[#1 \thereferencectr.]
+}{\end{refbox}}
+
+\newtcolorbox{sumbox}[1][]{mysummary, title={#1}}
+\newenvironment{summary}[1][\summaryname]{%
+  \refstepcounter{summaryctr}%
+  \begin{sumbox}[#1 \thesummaryctr.]
+}{\end{sumbox}}
+
 % Starred versions
 \newenvironment{theorem*}[1][\theoremname]{\begin{thmbox}[#1.]\itshape}{\end{thmbox}}
 \newenvironment{lemma*}[1][\lemmaname]{\begin{thmbox}[#1.]\itshape}{\end{thmbox}}
@@ -539,17 +688,17 @@
 
 \renewenvironment{proof}[1][\proofenvname]{%
   \begin{proofbox}%
-    {\titlefont\itshape\color{thmline}#1.}\enspace\ignorespaces
+  {\titlefont\itshape\color{thmline}#1.}\enspace\ignorespaces
 }{%
-    \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{thmline}\proofended}\par
+  \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{thmline}\proofended}\par
   \end{proofbox}%
 }
 
 \newenvironment{solution}[1][\solutionname]{%
   \begin{solutionbox}%
-    {\titlefont\itshape\color{probline}#1.}\enspace\ignorespaces
+  {\titlefont\itshape\color{probline}#1.}\enspace\ignorespaces
 }{%
-    \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{probline}\solutionended}\par
+  \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{probline}\solutionended}\par
   \end{solutionbox}%
 }
 
@@ -570,9 +719,9 @@
   fonttitle=\bfseries\sffamily,
   attach boxed title to top left={yshift=-\tcboxedtitleheight/2, xshift=5mm},
   boxed title style={
-    colback=accent!5,
-    frame hidden,
-  },
+      colback=accent!5,
+      frame hidden,
+    },
   after skip=0pt,
   #1
 }
@@ -592,14 +741,15 @@
   title={\termsname},
   coltitle=accentdark,
   fonttitle=\bfseries\sffamily,
-  attach boxed title to top right={yshift=-\tcboxedtitleheight/2, xshift=-5mm},
+  attach boxed title to top left={yshift=-\tcboxedtitleheight/2, xshift=5mm},
   boxed title style={
-    colback=white,
-    frame hidden,
-  },
+      colback=accent!5,
+      frame hidden,
+    },
   top=4pt,
   % borderline north removed for solid top rule matching bottom
   before skip=0pt,
+  after skip=1.2em,
   #1
 }
 
@@ -631,26 +781,27 @@
 % ==============================================================================
 %                              Title Page
 % ==============================================================================
-\definecolor{titleblue}{HTML}{5a9bd4}
-\definecolor{titledark}{HTML}{2c5282}
+\definecolor{titleblue}{HTML}{1FC4C4}
+\definecolor{titledark}{HTML}{0F172A}
 
 % Custom title page with geometric design
 % Usage: \maketitlepage{Title}{Subtitle}{Author}{Date}
 \newcommand{\maketitlepage}[4]{%
+  \gdef\docname{#2: #1}%
   \thispagestyle{empty}%
   \begin{tikzpicture}[remember picture, overlay]
     % Full light blue background (extended to avoid gaps)
     \fill[titleblue] ([xshift=-2mm,yshift=-2mm]current page.south west) rectangle ([xshift=2mm,yshift=2mm]current page.north east);
-    
+
     % Subtle darker corner accent - bottom left
-    \fill[titledark] 
-      (current page.south west) -- 
-      ([yshift=8cm]current page.south west) -- 
+    \fill[titledark]
+    (current page.south west) --
+    ([yshift=8cm]current page.south west) --
       ([xshift=8cm]current page.south west) -- cycle;
-      
+
     % Thin white geometric lines
-    \draw[white, line width=1.5pt] 
-      ([xshift=3cm, yshift=3cm]current page.south west) -- 
+    \draw[white, line width=1.5pt]
+    ([xshift=3cm, yshift=3cm]current page.south west) --
       ([xshift=3cm, yshift=12cm]current page.south west) --
       ([xshift=12cm, yshift=3cm]current page.south west) -- cycle;
 
@@ -658,19 +809,19 @@
     \fill[white] ([xshift=3cm, yshift=12cm]current page.south west) circle (5pt);
 
     % Title Content - aligned exactly 3cm from the right edge
-    \node[anchor=north east, inner sep=0pt] 
-      at ([xshift=-3cm, yshift=-4cm]current page.north east) {
-        \begin{minipage}{15cm}
-          \raggedleft
-          % Optical alignment: larger fonts have larger sidebearings, so we nudge it right slightly
-          {\fontsize{72}{84}\selectfont\titlefont\bfseries\color{white}#1\hspace*{-0.04em}\par}
-          \vspace{1.2cm}
-          {\fontsize{36}{42}\selectfont\titlefont\color{white!90}#2\par}
-          \vspace{3cm}
-          {\fontsize{20}{24}\selectfont\color{white!80}\bfseries#3\par}
-          \vspace{0.5cm}
-          {\fontsize{16}{20}\selectfont\color{white!70}#4\par}
-        \end{minipage}
+    \node[anchor=north east, inner sep=0pt]
+    at ([xshift=-3cm, yshift=-4cm]current page.north east) {
+      \begin{minipage}{15cm}
+        \raggedleft
+        % Optical alignment: larger fonts have larger sidebearings, so we nudge it right slightly
+        {\fontsize{64}{72}\selectfont\titlefont\bfseries\color{white}#2\hspace*{-0.04em}\par}
+        \vspace{0.5cm}
+        {\fontsize{32}{36}\selectfont\titlefont\color{white!90}#1\par}
+        \vspace{3cm}
+        {\fontsize{20}{24}\selectfont\titlefont\color{white!80}\bfseries#3\par}
+        \vspace{0.5cm}
+        {\fontsize{16}{18}\selectfont\titlefont\color{white!70}#4\par}
+      \end{minipage}
     };
   \end{tikzpicture}%
   \newpage
