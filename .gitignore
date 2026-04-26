@@ -14,3 +14,6 @@
 *.run.xml
 build/
 .vscode/
+
+# macOS
+.DS_Store
