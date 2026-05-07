@@ -20,6 +20,14 @@
 \RequirePackage{algpseudocode}
 \RequirePackage[backend=biber,style=numeric,sorting=none]{biblatex}
 \addbibresource{resources/references.bib}
+\RequirePackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accent,
+    citecolor=accent,
+    urlcolor=accent,
+    breaklinks=true
+}
 \RequirePackage[
   top=1.4cm,
   bottom=0.2cm,
@@ -140,6 +148,7 @@
   \renewcommand{\envcolorname}{#1}%
   \setlist[itemize]{label={\color{#1}\textbullet}}%
   \setlist[enumerate]{label={\color{#1}\bfseries\arabic*)}}%
+  \hypersetup{linkcolor=#1, citecolor=#1, urlcolor=#1}%
 }
 
 % Colored bold text: \textbf picks up \envcolorname
@@ -347,6 +356,11 @@
 % Redefine section mark to include the § symbol in the header
 \renewcommand{\sectionmark}[1]{\markboth{§\,\thesection\quad#1}{}}
 
+% Bibliography heading fix (avoid uppercase in headers)
+\defbibheading{bibliography}[\refname]{%
+  \section*{#1}%
+  \markboth{#1}{#1}}
+
 % Section styling
 \titleformat{\section}
 {\normalfont\Large\titlefont\bfseries\color{accentdark}}
@@ -525,7 +539,7 @@
 \renewcommand{\Im}{\mathfrak{I}\mathfrak{m}}
 \newcommand\unit{\hat{\mathds{1}}}
 
-\newcommand{\N}{\mathds{N} \qquad \qquad}
+\newcommand{\N}{\mathds{N}}
 \newcommand{\Z}{\mathds{Z}}
 \newcommand{\R}{\mathds{R}}
 \newcommand{\Q}{\mathds{Q}}
