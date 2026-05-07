@@ -138,8 +138,6 @@
   listcolor/.style={
     before upper={%
       \renewcommand{\envcolorname}{#1}%
-      \setlist[itemize]{format=\color{#1}}%
-      \setlist[enumerate]{format=\color{#1}}%
     }
   }
 }
@@ -290,8 +288,8 @@
 \RequirePackage[shortlabels]{enumitem}
 
 \setlist{nosep, leftmargin=1.8em, itemsep=0.25em}
-\setlist[enumerate]{label={\arabic*)}, font={\bfseries}, format=\color{accent}}
-\setlist[itemize]{label={\textbullet}, format=\color{accent}}
+\setlist[enumerate]{label={\arabic*)}, font={\bfseries}, format=\color{\envcolorname}}
+\setlist[itemize]{label={\textbullet}, format=\color{\envcolorname}}
 
 % ==============================================================================
 %                              Tables
