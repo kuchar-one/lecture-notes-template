@@ -129,10 +129,15 @@
 
 \newcommand{\envcolorname}{accent}
 
-% ==============================================================================
-%                              Beautiful Boxes
-% ==============================================================================
-\RequirePackage[most]{tcolorbox}
+\tcbset{
+  listcolor/.style={
+    before upper={%
+      \renewcommand{\envcolorname}{#1}%
+      \setlist[itemize]{label={\color{#1}\textbullet}}%
+      \setlist[enumerate]{label={\color{#1}\arabic*)}, font={\color{#1}\bfseries}}%
+    }
+  }
+}
 
 \tcbset{
   % Theorem style
@@ -149,7 +154,7 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, before upper={\renewcommand{\envcolorname}{thmline}},
+      after skip=0pt, listcolor=thmline,
       fonttitle=\titlefont\bfseries,
       coltitle=thmline!85!black,
       attach title to upper,
@@ -169,7 +174,7 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, before upper={\renewcommand{\envcolorname}{defline}},
+      after skip=0pt, listcolor=defline,
       fonttitle=\titlefont\bfseries,
       coltitle=defline!90!black,
       attach title to upper,
@@ -189,7 +194,7 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, before upper={\renewcommand{\envcolorname}{noteline}},
+      after skip=0pt, listcolor=noteline,
       fonttitle=\titlefont\bfseries,
       coltitle=noteline!90!black,
       attach title to upper,
@@ -209,7 +214,7 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, before upper={\renewcommand{\envcolorname}{thmline!30}},
+      after skip=0pt, listcolor=thmline!30,
       fontupper=\small,
     },
   % Solution style (pairs with problems)
@@ -226,7 +231,7 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, before upper={\renewcommand{\envcolorname}{probline!40}},
+      after skip=0pt, listcolor=probline!40,
       fontupper=\small,
     },
   % Problem style
@@ -243,21 +248,21 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, before upper={\renewcommand{\envcolorname}{probline}},
+      after skip=0pt, listcolor=probline,
       fonttitle=\titlefont\bfseries,
       coltitle=probline!90!black,
       attach title to upper,
       after title={\enspace},
     },
   % New Environments
-  myobjective/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{objline}, interior style={left color=objback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, before upper={\renewcommand{\envcolorname}{objline}}, fonttitle=\titlefont\bfseries, coltitle=objline!90!black, attach title to upper, after title={\enspace}},
-  myintuition/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{intline}, interior style={left color=intback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, before upper={\renewcommand{\envcolorname}{intline}}, fonttitle=\titlefont\bfseries, coltitle=intline!90!black, attach title to upper, after title={\enspace}},
-  myalgorithm/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{algline}, interior style={left color=algback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, before upper={\renewcommand{\envcolorname}{algline}}, fonttitle=\titlefont\bfseries, coltitle=algline!90!black, attach title to upper, after title={\enspace}},
-  myapplication/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{appline}, interior style={left color=appback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, before upper={\renewcommand{\envcolorname}{appline}}, fonttitle=\titlefont\bfseries, coltitle=appline!90!black, attach title to upper, after title={\enspace}},
-  myhistory/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{histline}, interior style={left color=histback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, before upper={\renewcommand{\envcolorname}{histline}}, fonttitle=\titlefont\bfseries, coltitle=histline!90!black, attach title to upper, after title={\enspace}},
-  mypitfall/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{pitfallline}, interior style={left color=pitfallback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, before upper={\renewcommand{\envcolorname}{pitfallline}}, fonttitle=\titlefont\bfseries, coltitle=pitfallline!90!black, attach title to upper, after title={\enspace}},
-  myreference/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{refline}, interior style={left color=refback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, before upper={\renewcommand{\envcolorname}{refline}}, fonttitle=\titlefont\bfseries, coltitle=refline!90!black, attach title to upper, after title={\enspace}},
-  mysummary/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{sumline}, interior style={left color=sumback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, before upper={\renewcommand{\envcolorname}{sumline}}, fonttitle=\titlefont\bfseries, coltitle=sumline!90!black, attach title to upper, after title={\enspace}},
+  myobjective/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{objline}, interior style={left color=objback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=objline, fonttitle=\titlefont\bfseries, coltitle=objline!90!black, attach title to upper, after title={\enspace}},
+  myintuition/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{intline}, interior style={left color=intback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=intline, fonttitle=\titlefont\bfseries, coltitle=intline!90!black, attach title to upper, after title={\enspace}},
+  myalgorithm/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{algline}, interior style={left color=algback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=algline, fonttitle=\titlefont\bfseries, coltitle=algline!90!black, attach title to upper, after title={\enspace}},
+  myapplication/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{appline}, interior style={left color=appback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=appline, fonttitle=\titlefont\bfseries, coltitle=appline!90!black, attach title to upper, after title={\enspace}},
+  myhistory/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{histline}, interior style={left color=histback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=histline, fonttitle=\titlefont\bfseries, coltitle=histline!90!black, attach title to upper, after title={\enspace}},
+  mypitfall/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{pitfallline}, interior style={left color=pitfallback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=pitfallline, fonttitle=\titlefont\bfseries, coltitle=pitfallline!90!black, attach title to upper, after title={\enspace}},
+  myreference/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{refline}, interior style={left color=refback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=refline, fonttitle=\titlefont\bfseries, coltitle=refline!90!black, attach title to upper, after title={\enspace}},
+  mysummary/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{sumline}, interior style={left color=sumback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=sumline, fonttitle=\titlefont\bfseries, coltitle=sumline!90!black, attach title to upper, after title={\enspace}},
 }
 
 % ==============================================================================
@@ -280,8 +285,8 @@
 \RequirePackage[shortlabels]{enumitem}
 
 \setlist{nosep, leftmargin=1.8em, itemsep=0.25em}
-\setlist[enumerate]{label={\color{\envcolorname}\arabic*)}, font={\color{\envcolorname}\bfseries}}
-\setlist[itemize]{label={\color{\envcolorname}\textbullet}}
+\setlist[enumerate]{label={\color{accent}\arabic*)}, font={\color{accent}\bfseries}}
+\setlist[itemize]{label={\color{accent}\textbullet}}
 
 % ==============================================================================
 %                              Tables
