@@ -138,8 +138,8 @@
   listcolor/.style={
     before upper={%
       \renewcommand{\envcolorname}{#1}%
-      \setlist[itemize]{label={\color{#1}\textbullet}}%
-      \setlist[enumerate]{label={\color{#1}\arabic*)}, font={\color{#1}\bfseries}}%
+      \setlist[itemize]{format=\color{#1}}%
+      \setlist[enumerate]{format=\color{#1}}%
     }
   }
 }
