@@ -134,13 +134,17 @@
 % ==============================================================================
 \RequirePackage[most]{tcolorbox}
 
-\tcbset{
-  listcolor/.style={
-    before upper={%
-      \renewcommand{\envcolorname}{#1}%
-    }
-  }
+% Helper: apply environment color overrides for lists and bold text.
+% Must be called INSIDE the box body (after \begin{<box>}[...]).
+\newcommand{\applyenvcolor}[1]{%
+  \renewcommand{\envcolorname}{#1}%
+  \setlist[itemize]{label={\color{#1}\textbullet}}%
+  \setlist[enumerate]{label={\color{#1}\bfseries\arabic*)}}%
 }
+
+% Colored bold text: \textbf picks up \envcolorname
+\let\origtextbf\textbf
+\renewcommand{\textbf}[1]{{\bfseries\color{\envcolorname}#1}}
 
 \tcbset{
   % Theorem style
@@ -157,7 +161,7 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, listcolor=thmline,
+      after skip=0pt,
       fonttitle=\titlefont\bfseries,
       coltitle=thmline!85!black,
       attach title to upper,
@@ -177,7 +181,7 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, listcolor=defline,
+      after skip=0pt,
       fonttitle=\titlefont\bfseries,
       coltitle=defline!90!black,
       attach title to upper,
@@ -197,7 +201,7 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, listcolor=noteline,
+      after skip=0pt,
       fonttitle=\titlefont\bfseries,
       coltitle=noteline!90!black,
       attach title to upper,
@@ -217,7 +221,7 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, listcolor=thmline!30,
+      after skip=0pt,
       fontupper=\small,
     },
   % Solution style (pairs with problems)
@@ -234,7 +238,7 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, listcolor=probline!40,
+      after skip=0pt,
       fontupper=\small,
     },
   % Problem style
@@ -251,21 +255,21 @@
       top=2.5pt,
       bottom=2.5pt,
       before skip=0pt,
-      after skip=0pt, listcolor=probline,
+      after skip=0pt,
       fonttitle=\titlefont\bfseries,
       coltitle=probline!90!black,
       attach title to upper,
       after title={\enspace},
     },
   % New Environments
-  myobjective/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{objline}, interior style={left color=objback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=objline, fonttitle=\titlefont\bfseries, coltitle=objline!90!black, attach title to upper, after title={\enspace}},
-  myintuition/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{intline}, interior style={left color=intback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=intline, fonttitle=\titlefont\bfseries, coltitle=intline!90!black, attach title to upper, after title={\enspace}},
-  myalgorithm/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{algline}, interior style={left color=algback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=algline, fonttitle=\titlefont\bfseries, coltitle=algline!90!black, attach title to upper, after title={\enspace}},
-  myapplication/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{appline}, interior style={left color=appback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=appline, fonttitle=\titlefont\bfseries, coltitle=appline!90!black, attach title to upper, after title={\enspace}},
-  myhistory/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{histline}, interior style={left color=histback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=histline, fonttitle=\titlefont\bfseries, coltitle=histline!90!black, attach title to upper, after title={\enspace}},
-  mypitfall/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{pitfallline}, interior style={left color=pitfallback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=pitfallline, fonttitle=\titlefont\bfseries, coltitle=pitfallline!90!black, attach title to upper, after title={\enspace}},
-  myreference/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{refline}, interior style={left color=refback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=refline, fonttitle=\titlefont\bfseries, coltitle=refline!90!black, attach title to upper, after title={\enspace}},
-  mysummary/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{sumline}, interior style={left color=sumback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, listcolor=sumline, fonttitle=\titlefont\bfseries, coltitle=sumline!90!black, attach title to upper, after title={\enspace}},
+  myobjective/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{objline}, interior style={left color=objback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=objline!90!black, attach title to upper, after title={\enspace}},
+  myintuition/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{intline}, interior style={left color=intback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=intline!90!black, attach title to upper, after title={\enspace}},
+  myalgorithm/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{algline}, interior style={left color=algback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=algline!90!black, attach title to upper, after title={\enspace}},
+  myapplication/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{appline}, interior style={left color=appback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=appline!90!black, attach title to upper, after title={\enspace}},
+  myhistory/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{histline}, interior style={left color=histback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=histline!90!black, attach title to upper, after title={\enspace}},
+  mypitfall/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{pitfallline}, interior style={left color=pitfallback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=pitfallline!90!black, attach title to upper, after title={\enspace}},
+  myreference/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{refline}, interior style={left color=refback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=refline!90!black, attach title to upper, after title={\enspace}},
+  mysummary/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{sumline}, interior style={left color=sumback, right color=white}, arc=0pt, left=10pt, right=0pt, top=2.5pt, bottom=2.5pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=sumline!90!black, attach title to upper, after title={\enspace}},
 }
 
 % ==============================================================================
@@ -288,8 +292,8 @@
 \RequirePackage[shortlabels]{enumitem}
 
 \setlist{nosep, leftmargin=1.8em, itemsep=0.25em}
-\setlist[enumerate]{label={\arabic*)}, font={\bfseries}, format=\color{\envcolorname}}
-\setlist[itemize]{label={\textbullet}, format=\color{\envcolorname}}
+\setlist[enumerate]{label={\color{accent}\bfseries\arabic*)}}
+\setlist[itemize]{label={\color{accent}\textbullet}}
 
 % ==============================================================================
 %                              Tables
@@ -580,40 +584,45 @@
 \NewDocumentEnvironment{theorem}{ O{} }{%
   \refstepcounter{theoremctr}%
   \ifstrempty{#1}%
-    {\begin{thmbox}[\theoremname\ \thetheoremctr.]\itshape}%
-    {\begin{thmbox}[\theoremname\ \thetheoremctr.\ (#1)]\itshape}%
+    {\begin{thmbox}[\theoremname\ \thetheoremctr.]}%
+    {\begin{thmbox}[\theoremname\ \thetheoremctr.\ (#1)]}%
+  \applyenvcolor{thmline!85!black}\itshape
 }{\end{thmbox}}
 
 % Lemma
 \NewDocumentEnvironment{lemma}{ O{} }{%
   \refstepcounter{lemmactr}%
   \ifstrempty{#1}%
-    {\begin{thmbox}[\lemmaname\ \thelemmactr.]\itshape}%
-    {\begin{thmbox}[\lemmaname\ \thelemmactr.\ (#1)]\itshape}%
+    {\begin{thmbox}[\lemmaname\ \thelemmactr.]}%
+    {\begin{thmbox}[\lemmaname\ \thelemmactr.\ (#1)]}%
+  \applyenvcolor{thmline!85!black}\itshape
 }{\end{thmbox}}
 
 % Proposition
 \NewDocumentEnvironment{proposition}{ O{} }{%
   \refstepcounter{propositionctr}%
   \ifstrempty{#1}%
-    {\begin{thmbox}[\propositionname\ \thepropositionctr.]\itshape}%
-    {\begin{thmbox}[\propositionname\ \thepropositionctr.\ (#1)]\itshape}%
+    {\begin{thmbox}[\propositionname\ \thepropositionctr.]}%
+    {\begin{thmbox}[\propositionname\ \thepropositionctr.\ (#1)]}%
+  \applyenvcolor{thmline!85!black}\itshape
 }{\end{thmbox}}
 
 % Corollary
 \NewDocumentEnvironment{corollary}{ O{} }{%
   \refstepcounter{corollaryctr}%
   \ifstrempty{#1}%
-    {\begin{thmbox}[\corollaryname\ \thecorollaryctr.]\itshape}%
-    {\begin{thmbox}[\corollaryname\ \thecorollaryctr.\ (#1)]\itshape}%
+    {\begin{thmbox}[\corollaryname\ \thecorollaryctr.]}%
+    {\begin{thmbox}[\corollaryname\ \thecorollaryctr.\ (#1)]}%
+  \applyenvcolor{thmline!85!black}\itshape
 }{\end{thmbox}}
 
 % Result
 \NewDocumentEnvironment{result}{ O{} }{%
   \refstepcounter{resultctr}%
   \ifstrempty{#1}%
-    {\begin{thmbox}[\resultname\ \theresultctr.]\itshape}%
-    {\begin{thmbox}[\resultname\ \theresultctr.\ (#1)]\itshape}%
+    {\begin{thmbox}[\resultname\ \theresultctr.]}%
+    {\begin{thmbox}[\resultname\ \theresultctr.\ (#1)]}%
+  \applyenvcolor{thmline!85!black}\itshape
 }{\end{thmbox}}
 
 % Definition
@@ -622,6 +631,7 @@
   \ifstrempty{#1}%
     {\begin{defbox}[\definitionname\ \thedefinitionctr.]}%
     {\begin{defbox}[\definitionname\ \thedefinitionctr.\ (#1)]}%
+  \applyenvcolor{defline!90!black}
 }{\end{defbox}}
 
 % Postulate
@@ -630,6 +640,7 @@
   \ifstrempty{#1}%
     {\begin{defbox}[\postulatename\ \thepostulatectr.]}%
     {\begin{defbox}[\postulatename\ \thepostulatectr.\ (#1)]}%
+  \applyenvcolor{defline!90!black}
 }{\end{defbox}}
 
 % Note
@@ -638,6 +649,7 @@
   \ifstrempty{#1}%
     {\begin{notbox}[\notename\ \thenotectr.]}%
     {\begin{notbox}[\notename\ \thenotectr.\ (#1)]}%
+  \applyenvcolor{noteline!90!black}
 }{\end{notbox}}
 
 % Problem
@@ -648,6 +660,7 @@
   \ifstrempty{#1}%
     {\begin{probbox}[\problemname\ \theproblemctr.]}%
     {\begin{probbox}[\problemname\ \theproblemctr.\ (#1)]}%
+  \applyenvcolor{probline!90!black}
 }{\end{probbox}}
 
 % New Environments
@@ -657,6 +670,7 @@
   \ifstrempty{#1}%
     {\begin{objbox}[\objectivename\ \theobjectivectr.]}%
     {\begin{objbox}[\objectivename\ \theobjectivectr.\ (#1)]}%
+  \applyenvcolor{objline!90!black}
 }{\end{objbox}}
 
 \newtcolorbox{intbox}[1][]{myintuition, title={#1}}
@@ -665,6 +679,7 @@
   \ifstrempty{#1}%
     {\begin{intbox}[\intuitionname\ \theintuitionctr.]}%
     {\begin{intbox}[\intuitionname\ \theintuitionctr.\ (#1)]}%
+  \applyenvcolor{intline!90!black}
 }{\end{intbox}}
 
 \newtcolorbox{algbox}[1][]{myalgorithm, title={#1}}
@@ -673,6 +688,7 @@
   \ifstrempty{#1}%
     {\begin{algbox}[\algorithmname\ \thealgorithmctr.]}%
     {\begin{algbox}[\algorithmname\ \thealgorithmctr.\ (#1)]}%
+  \applyenvcolor{algline!90!black}
 }{\end{algbox}}
 
 \newtcolorbox{appbox}[1][]{myapplication, title={#1}}
@@ -681,6 +697,7 @@
   \ifstrempty{#1}%
     {\begin{appbox}[\applicationname\ \theapplicationctr.]}%
     {\begin{appbox}[\applicationname\ \theapplicationctr.\ (#1)]}%
+  \applyenvcolor{appline!90!black}
 }{\end{appbox}}
 
 \newtcolorbox{histbox}[1][]{myhistory, title={#1}}
@@ -689,6 +706,7 @@
   \ifstrempty{#1}%
     {\begin{histbox}[\historyname\ \thehistoryctr.]}%
     {\begin{histbox}[\historyname\ \thehistoryctr.\ (#1)]}%
+  \applyenvcolor{histline!90!black}
 }{\end{histbox}}
 
 \newtcolorbox{pitbox}[1][]{mypitfall, title={#1}}
@@ -697,6 +715,7 @@
   \ifstrempty{#1}%
     {\begin{pitbox}[\pitfallname\ \thepitfallctr.]}%
     {\begin{pitbox}[\pitfallname\ \thepitfallctr.\ (#1)]}%
+  \applyenvcolor{pitfallline!90!black}
 }{\end{pitbox}}
 
 \newtcolorbox{refbox}[1][]{myreference, title={#1}}
@@ -705,6 +724,7 @@
   \ifstrempty{#1}%
     {\begin{refbox}[\referencename\ \thereferencectr.]}%
     {\begin{refbox}[\referencename\ \thereferencectr.\ (#1)]}%
+  \applyenvcolor{refline!90!black}
 }{\end{refbox}}
 
 \newtcolorbox{sumbox}[1][]{mysummary, title={#1}}
@@ -713,33 +733,39 @@
   \ifstrempty{#1}%
     {\begin{sumbox}[\summaryname\ \thesummaryctr.]}%
     {\begin{sumbox}[\summaryname\ \thesummaryctr.\ (#1)]}%
+  \applyenvcolor{sumline!90!black}
 }{\end{sumbox}}
 
 % Starred versions
 \NewDocumentEnvironment{theorem*}{ O{} }{%
   \ifstrempty{#1}%
-    {\begin{thmbox}[\theoremname.]\itshape}%
-    {\begin{thmbox}[\theoremname.\ (#1)]\itshape}%
+    {\begin{thmbox}[\theoremname.]}%
+    {\begin{thmbox}[\theoremname.\ (#1)]}%
+  \applyenvcolor{thmline!85!black}\itshape
 }{\end{thmbox}}
 \NewDocumentEnvironment{lemma*}{ O{} }{%
   \ifstrempty{#1}%
-    {\begin{thmbox}[\lemmaname.]\itshape}%
-    {\begin{thmbox}[\lemmaname.\ (#1)]\itshape}%
+    {\begin{thmbox}[\lemmaname.]}%
+    {\begin{thmbox}[\lemmaname.\ (#1)]}%
+  \applyenvcolor{thmline!85!black}\itshape
 }{\end{thmbox}}
 \NewDocumentEnvironment{definition*}{ O{} }{%
   \ifstrempty{#1}%
     {\begin{defbox}[\definitionname.]}%
     {\begin{defbox}[\definitionname.\ (#1)]}%
+  \applyenvcolor{defline!90!black}
 }{\end{defbox}}
 \NewDocumentEnvironment{note*}{ O{} }{%
   \ifstrempty{#1}%
     {\begin{notbox}[\notename.]}%
     {\begin{notbox}[\notename.\ (#1)]}%
+  \applyenvcolor{noteline!90!black}
 }{\end{notbox}}
 \NewDocumentEnvironment{problem*}{ O{} }{%
   \ifstrempty{#1}%
     {\begin{probbox}[\problemname.]}%
     {\begin{probbox}[\problemname.\ (#1)]}%
+  \applyenvcolor{probline!90!black}
 }{\end{probbox}}
 
 % ==============================================================================
@@ -749,6 +775,7 @@
 
 \renewenvironment{proof}[1][\proofenvname]{%
   \begin{proofbox}%
+  \applyenvcolor{thmline}
   {\titlefont\itshape\color{thmline}#1.}\enspace\ignorespaces
 }{%
   \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{thmline}\proofended}\par
@@ -757,6 +784,7 @@
 
 \newenvironment{solution}[1][\solutionname]{%
   \begin{solutionbox}%
+  \applyenvcolor{probline}
   {\titlefont\itshape\color{probline}#1.}\enspace\ignorespaces
 }{%
   \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{probline}\solutionended}\par
