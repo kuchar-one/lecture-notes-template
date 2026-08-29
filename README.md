@@ -8,7 +8,7 @@ To use this template for a new project without copying over the Git history, run
 
 ```bash
 # Clone the repository (without history) into your new project folder
-git clone --depth 1 <repository-url> my-new-notes
+git clone -b tufte-aesthetic --depth 1 https://github.com/kuchar-one/lecture-notes-template.git my-new-notes
 
 # Navigate into the folder
 cd my-new-notes
