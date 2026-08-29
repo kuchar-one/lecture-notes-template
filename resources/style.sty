@@ -1,6 +1,8 @@
 \ProvidesPackage{resources/style}[2026/04/26 Custom Lecture Notes Style]
 
 \newif\iflangcz
+\RequirePackage{luacode}
+\directlua{require("resources/nested_parser")}
 \DeclareOption{czech}{\langcztrue}
 \DeclareOption{english}{\langczfalse}
 \ExecuteOptions{english}
@@ -49,8 +51,8 @@
 ]{STIX Two Text}
 
 % Modern geometric sans-serif (Overpass)
-\setsansfont[Path=fonts/, UprightFont=Overpass-Regular.ttf, BoldFont=Overpass-Bold.ttf, ItalicFont=Overpass-Italic.ttf, BoldItalicFont=Overpass-BoldItalic.ttf]{Overpass}
-\newfontfamily\titlefont[Path=fonts/, UprightFont=Overpass-Regular.ttf, BoldFont=Overpass-Bold.ttf, ItalicFont=Overpass-Italic.ttf, BoldItalicFont=Overpass-BoldItalic.ttf]{Overpass}
+\setsansfont[Path=fonts/, UprightFont=Overpass-Regular.ttf, BoldFont=Overpass-Bold.ttf, ItalicFont=Overpass-Italic.ttf, BoldItalicFont=Overpass-BoldItalic.ttf, Ligatures=TeX]{Overpass}
+\newfontfamily\titlefont[Path=fonts/, UprightFont=Overpass-Regular.ttf, BoldFont=Overpass-Bold.ttf, ItalicFont=Overpass-Italic.ttf, BoldItalicFont=Overpass-BoldItalic.ttf, Ligatures=TeX]{Overpass}
 
 \RequirePackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
 \setmathfont{STIX Two Math}
@@ -60,6 +62,8 @@
 
 \RequirePackage{microtype}
 
+\RequirePackage{parskip}
+\setlength{\parskip}{0.8em plus 0.2em minus 0.2em}
 % ==============================================================================
 %                              Language
 % ==============================================================================
@@ -129,6 +133,10 @@
 \definecolor{sumback}{HTML}{f0fdfa}
 \definecolor{sumline}{HTML}{14b8a6}
 
+% Exam strategy: Deep Rose
+\definecolor{examback}{HTML}{fdf2f8}
+\definecolor{examline}{HTML}{db2777}
+
 % Page elements
 \definecolor{headtext}{HTML}{334155}
 \definecolor{rulecolor}{HTML}{38BDF8}
@@ -136,6 +144,32 @@
 \definecolor{figline}{HTML}{e11d48}
 
 \newcommand{\envcolorname}{accent}
+\newcommand{\parentline}{thmline}
+\newcommand{\parentback}{thmback}
+\colorlet{lastclosedboxline}{thmline}
+\colorlet{lastclosedboxback}{thmback}
+\colorlet{parentlinecolor}{thmline}
+\colorlet{parentbackcolor}{thmback}
+\newcommand{\addnestedspace}{}
+\newcommand{\isnestedbox}{false}
+\newbool{isnestedboxbool}
+\newcommand{\afternestedbox}{false}
+
+\newcommand{\nestedgapfill}{%
+  \fill[parentbackcolor, draw=none] (frame.south west) rectangle ([xshift=13pt]frame.north west);
+  \fill[parentlinecolor, draw=none] (frame.south west) rectangle ([xshift=3pt]frame.north west);
+  \fill[mixedborder, draw=none] ([xshift=13pt]frame.south west) rectangle ([xshift=16pt]frame.north west);
+}
+
+\newcommand{\setlastclosedbox}[2]{%
+  \xglobal\colorlet{lastclosedboxline}{#1}%
+  \xglobal\colorlet{lastclosedboxback}{#2}%
+  \ifdefstring{\isnestedbox}{true}{%
+    \gdef\afternestedbox{true}%
+  }{%
+    \gdef\afternestedbox{false}%
+  }%
+}
 
 % ==============================================================================
 %                              Beautiful Boxes
@@ -145,10 +179,24 @@
 % Helper: apply environment color overrides for lists and bold text.
 % Must be called INSIDE the box body (after \begin{<box>}[...]).
 \newcommand{\applyenvcolor}[1]{%
-  \renewcommand{\envcolorname}{#1}%
-  \setlist[itemize]{label={\color{#1}\textbullet}}%
-  \setlist[enumerate]{label={\color{#1}\bfseries\arabic*)}}%
-  \hypersetup{linkcolor=#1, citecolor=#1, urlcolor=#1}%
+  \boolfalse{isnestedboxbool}%
+  \ifnum\value{tcblayer}>1\relax
+    \booltrue{isnestedboxbool}%
+  \fi
+  \ifdefstring{\isnestedbox}{true}{%
+    \booltrue{isnestedboxbool}%
+  }{}%
+  \ifbool{isnestedboxbool}{%
+    \renewcommand{\envcolorname}{mixedline}%
+    \setlist[itemize]{label={\color{mixedline}\textbullet}}%
+    \setlist[enumerate]{label={\color{mixedline}\bfseries\arabic*)}}%
+    \hypersetup{linkcolor=mixedline, citecolor=mixedline, urlcolor=mixedline}%
+  }{%
+    \renewcommand{\envcolorname}{#1}%
+    \setlist[itemize]{label={\color{#1}\textbullet}}%
+    \setlist[enumerate]{label={\color{#1}\bfseries\arabic*)}}%
+    \hypersetup{linkcolor=#1, citecolor=#1, urlcolor=#1}%
+  }%
 }
 
 % Colored bold text: \textbf picks up \envcolorname
@@ -156,14 +204,75 @@
 \renewcommand{\textbf}[1]{{\bfseries\color{\envcolorname}#1}}
 
 \tcbset{
+  parbox=false,
+  every box on layer 2/.append style={parbox=false},
+  every box on layer 3/.append style={parbox=false},
+  every box on layer 4/.append style={parbox=false},
+  % Mixable style for nested boxes
+  mixable/.style 2 args={%
+    code={%
+      \boolfalse{isnestedboxbool}%
+      \ifnum\value{tcblayer}>1\relax
+        \booltrue{isnestedboxbool}%
+      \fi
+      \ifdefstring{\isnestedbox}{true}{%
+        \booltrue{isnestedboxbool}%
+      }{}%
+      \ifbool{isnestedboxbool}{%
+        \xglobal\colorlet{mixedline}{#1!50!parentlinecolor}%
+        \xglobal\colorlet{mixedborder}{mixedline!50!white}%
+        \xglobal\colorlet{mixedback}{mixedline!18!white}%
+        \tcbset{
+          enhanced,
+          enforce breakable,
+          boxrule=0pt,
+          frame hidden,
+          arc=0pt,
+          left=23pt,
+          right=0pt,
+          borderline west={3pt}{0pt}{parentlinecolor},
+          borderline west={3pt}{13pt}{mixedborder},
+          interior style={left color=mixedback, right color=white, draw=none},
+          underlay unbroken=\nestedgapfill,
+          underlay first=\nestedgapfill,
+          underlay middle=\nestedgapfill,
+          underlay last=\nestedgapfill,
+          coltitle=mixedline!85!black,
+          before skip=-\dimexpr\parskip\relax,
+        }%
+        \ifdefstring{\afternestedbox}{true}{%
+          \tcbset{top=3pt}%
+        }{%
+          \tcbset{top=8pt}%
+        }%
+        \ifdefstring{\nextisnested}{true}{%
+          \tcbset{bottom=3pt}%
+        }{%
+          \tcbset{bottom=8pt}%
+        }%
+        \gdef\afternestedbox{true}%
+      }{%
+        \tcbset{
+          borderline west={3pt}{0pt}{#1},
+          interior style={left color=#2, right color=white},
+          coltitle=#1!85!black,
+          before skip=0pt,
+          after skip=0pt,
+          top=8pt,
+          bottom=8pt,
+        }%
+        \gdef\afternestedbox{false}%
+      }%
+      \def\parentline{#1}%
+      \def\parentback{#2}%
+    }%
+  },
   % Theorem style
   mythm/.style={
       enhanced,
       breakable,
       boxrule=0pt,
       frame hidden,
-      borderline west={3pt}{0pt}{thmline},
-      interior style={left color=thmback, right color=white},
       arc=0pt,
       left=10pt,
       right=0pt,
@@ -171,8 +280,8 @@
       bottom=8pt,
       before skip=0pt,
       after skip=0pt,
+      mixable={thmline}{thmback},
       fonttitle=\titlefont\bfseries,
-      coltitle=thmline!85!black,
       attach title to upper,
       after title={\enspace},
     },
@@ -182,8 +291,6 @@
       breakable,
       boxrule=0pt,
       frame hidden,
-      borderline west={3pt}{0pt}{defline},
-      interior style={left color=defback, right color=white},
       arc=0pt,
       left=10pt,
       right=0pt,
@@ -191,8 +298,8 @@
       bottom=8pt,
       before skip=0pt,
       after skip=0pt,
+      mixable={defline}{defback},
       fonttitle=\titlefont\bfseries,
-      coltitle=defline!90!black,
       attach title to upper,
       after title={\enspace},
     },
@@ -202,8 +309,6 @@
       breakable,
       boxrule=0pt,
       frame hidden,
-      borderline west={3pt}{0pt}{noteline},
-      interior style={left color=noteback, right color=white},
       arc=0pt,
       left=10pt,
       right=0pt,
@@ -211,19 +316,17 @@
       bottom=8pt,
       before skip=0pt,
       after skip=0pt,
+      mixable={noteline}{noteback},
       fonttitle=\titlefont\bfseries,
-      coltitle=noteline!90!black,
       attach title to upper,
       after title={\enspace},
     },
-  % Proof style
   myproof/.style={
       enhanced,
-      breakable,
+      enforce breakable,
+      lines before break=1,
       boxrule=0pt,
       frame hidden,
-      borderline west={3pt}{0pt}{thmline!30},
-      colback=white,
       arc=0pt,
       left=10pt,
       right=0pt,
@@ -232,15 +335,67 @@
       before skip=0pt,
       after skip=0pt,
       fontupper=\small,
+      code={%
+        \boolfalse{isnestedboxbool}%
+        \ifnum\value{tcblayer}>1\relax
+          \booltrue{isnestedboxbool}%
+        \fi
+        \ifdefstring{\isnestedbox}{true}{%
+          \booltrue{isnestedboxbool}%
+        }{}%
+        \ifbool{isnestedboxbool}{%
+          \xglobal\colorlet{mixedline}{thmline!50!parentlinecolor}%
+          \xglobal\colorlet{mixedborder}{mixedline!50!white}%
+          \xglobal\colorlet{mixedback}{mixedline!18!white}%
+          \tcbset{
+            enhanced,
+            enforce breakable,
+            boxrule=0pt,
+            frame hidden,
+            arc=0pt,
+            left=23pt,
+            right=0pt,
+            borderline west={3pt}{0pt}{parentlinecolor},
+            borderline west={3pt}{13pt}{mixedborder},
+            interior style={left color=mixedback, right color=white, draw=none},
+            underlay unbroken=\nestedgapfill,
+            underlay first=\nestedgapfill,
+            underlay middle=\nestedgapfill,
+            underlay last=\nestedgapfill,
+            before skip=-\dimexpr\parskip\relax,
+            after skip=0pt,
+          }%
+          \ifdefstring{\afternestedbox}{true}{%
+            \tcbset{top=3pt}%
+          }{%
+            \tcbset{top=8pt}%
+          }%
+          \ifdefstring{\nextisnested}{true}{%
+            \tcbset{bottom=3pt}%
+          }{%
+            \tcbset{bottom=8pt}%
+          }%
+          \gdef\afternestedbox{true}%
+        }{%
+          \tcbset{
+            colback=white,
+            borderline west={3pt}{0pt}{thmline!30},
+            before skip=0pt,
+            after skip=0pt,
+            top=8pt,
+            bottom=8pt,
+          }%
+          \gdef\afternestedbox{false}%
+        }%
+      }
     },
   % Solution style (pairs with problems)
   mysolution/.style={
       enhanced,
-      breakable,
+      enforce breakable,
+      lines before break=1,
       boxrule=0pt,
       frame hidden,
-      borderline west={3pt}{0pt}{probline!40},
-      colback=white,
       arc=0pt,
       left=10pt,
       right=0pt,
@@ -249,6 +404,59 @@
       before skip=0pt,
       after skip=0pt,
       fontupper=\small,
+      code={%
+        \boolfalse{isnestedboxbool}%
+        \ifnum\value{tcblayer}>1\relax
+          \booltrue{isnestedboxbool}%
+        \fi
+        \ifdefstring{\isnestedbox}{true}{%
+          \booltrue{isnestedboxbool}%
+        }{}%
+        \ifbool{isnestedboxbool}{%
+          \xglobal\colorlet{mixedline}{probline!50!parentlinecolor}%
+          \xglobal\colorlet{mixedborder}{mixedline!50!white}%
+          \xglobal\colorlet{mixedback}{mixedline!18!white}%
+          \tcbset{
+            enhanced,
+            enforce breakable,
+            boxrule=0pt,
+            frame hidden,
+            arc=0pt,
+            left=23pt,
+            right=0pt,
+            borderline west={3pt}{0pt}{parentlinecolor},
+            borderline west={3pt}{13pt}{mixedborder},
+            interior style={left color=mixedback, right color=white, draw=none},
+            underlay unbroken=\nestedgapfill,
+            underlay first=\nestedgapfill,
+            underlay middle=\nestedgapfill,
+            underlay last=\nestedgapfill,
+            before skip=-\dimexpr\parskip\relax,
+            after skip=0pt,
+          }%
+          \ifdefstring{\afternestedbox}{true}{%
+            \tcbset{top=3pt}%
+          }{%
+            \tcbset{top=8pt}%
+          }%
+          \ifdefstring{\nextisnested}{true}{%
+            \tcbset{bottom=3pt}%
+          }{%
+            \tcbset{bottom=8pt}%
+          }%
+          \gdef\afternestedbox{true}%
+        }{%
+          \tcbset{
+            colback=white,
+            borderline west={3pt}{0pt}{probline!40},
+            before skip=0pt,
+            after skip=0pt,
+            top=8pt,
+            bottom=8pt,
+          }%
+          \gdef\afternestedbox{false}%
+        }%
+      }
     },
   % Problem style
   myproblem/.style={
@@ -256,8 +464,6 @@
       breakable,
       boxrule=0pt,
       frame hidden,
-      borderline west={3pt}{0pt}{probline},
-      interior style={left color=probback, right color=white},
       arc=0pt,
       left=10pt,
       right=0pt,
@@ -265,27 +471,28 @@
       bottom=8pt,
       before skip=0pt,
       after skip=0pt,
+      mixable={probline}{probback},
       fonttitle=\titlefont\bfseries,
-      coltitle=probline!90!black,
       attach title to upper,
       after title={\enspace},
     },
   % New Environments
-  myobjective/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{objline}, interior style={left color=objback, right color=white}, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=objline!90!black, attach title to upper, after title={\enspace}},
-  myintuition/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{intline}, interior style={left color=intback, right color=white}, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=intline!90!black, attach title to upper, after title={\enspace}},
-  myalgorithm/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{algline}, interior style={left color=algback, right color=white}, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=algline!90!black, attach title to upper, after title={\enspace}},
-  myapplication/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{appline}, interior style={left color=appback, right color=white}, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=appline!90!black, attach title to upper, after title={\enspace}},
-  myhistory/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{histline}, interior style={left color=histback, right color=white}, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=histline!90!black, attach title to upper, after title={\enspace}},
-  mypitfall/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{pitfallline}, interior style={left color=pitfallback, right color=white}, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=pitfallline!90!black, attach title to upper, after title={\enspace}},
-  myreference/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{refline}, interior style={left color=refback, right color=white}, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=refline!90!black, attach title to upper, after title={\enspace}},
-  mysummary/.style={enhanced, breakable, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{sumline}, interior style={left color=sumback, right color=white}, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, fonttitle=\titlefont\bfseries, coltitle=sumline!90!black, attach title to upper, after title={\enspace}},
+  myobjective/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={objline}{objback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
+  myintuition/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={intline}{intback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
+  myalgorithm/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={algline}{algback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
+  myapplication/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={appline}{appback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
+  myhistory/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={histline}{histback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
+  mypitfall/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={pitfallline}{pitfallback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
+  myreference/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={refline}{refback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
+  mysummary/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={sumline}{sumback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
+  myexam/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={examline}{examback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
 }
 
 % ==============================================================================
 %                              Graphics & Layout
 % ==============================================================================
 \RequirePackage{tikz}
-\usetikzlibrary{calc}
+\usetikzlibrary{calc,babel}
 \RequirePackage{graphicx}
 \graphicspath{{images/}{img/}}
 \RequirePackage{multicol}
@@ -361,6 +568,12 @@
   \section*{#1}%
   \markboth{#1}{#1}}
 
+% Part styling
+\titleformat{\part}[display]
+{\normalfont\Huge\titlefont\bfseries\color{accentdark}\filcenter}
+{\partname~\thepart}{0.5em}{}
+[\vspace{0.5em}{\color{rulecolor}\titlerule[2pt]}]
+
 % Section styling
 \titleformat{\section}
 {\normalfont\Large\titlefont\bfseries\color{accentdark}}
@@ -378,6 +591,17 @@
 \titlespacing*{\section}{0pt}{1.2em}{0.4em}
 \titlespacing*{\subsection}{0pt}{0.4em}{-0.2em}
 \titlespacing*{\subsubsection}{0pt}{0.4em}{-0.2em}
+
+% Otázky plynou plynule za sebou --- žádný \clearpage před \section.
+% Záporná penalta jen \emph{nabízí} zlom na hranici otázek: když se nová otázka
+% na zbytek stránky stejně nevejde, TeX ji odsune, jinak naváže hned.
+% (Nadpis nemůže zůstat osamocen dole: \@afterheading za ním drží první řádek
+% nekonečnou penaltou.)
+\newcommand{\sectionbreak}{\par\penalty-300\relax}
+% Stránku lámeme jen před částmi. Pro jistotu je \clearpage navíc explicitně
+% i v main.tex, protože podpora hooku \partbreak se mezi verzemi titlesec liší;
+% druhý \clearpage na čisté stránce nic nedělá.
+\newcommand{\partbreak}{\clearpage}
 
 
 
@@ -442,6 +666,7 @@
 \newcommand{\pitfallnameCZ}{Častá chyba}
 \newcommand{\referencenameCZ}{Klíčová reference}
 \newcommand{\summarynameCZ}{Shrnutí}
+\newcommand{\examnameCZ}{Jak uspět}
 
 \newcommand{\definitionnameEN}{Definition}
 \newcommand{\theoremnameEN}{Theorem}
@@ -467,6 +692,7 @@
 \newcommand{\pitfallnameEN}{Pitfall}
 \newcommand{\referencenameEN}{Key Reference}
 \newcommand{\summarynameEN}{Summary}
+\newcommand{\examnameEN}{Exam strategy}
 
 \iflangcz
   \newcommand{\definitionname}{\definitionnameCZ}
@@ -493,6 +719,7 @@
   \newcommand{\pitfallname}{\pitfallnameCZ}
   \newcommand{\referencename}{\referencenameCZ}
   \newcommand{\summaryname}{\summarynameCZ}
+  \newcommand{\examname}{\examnameCZ}
 \else
   \newcommand{\definitionname}{\definitionnameEN}
   \newcommand{\theoremname}{\theoremnameEN}
@@ -518,6 +745,7 @@
   \newcommand{\pitfallname}{\pitfallnameEN}
   \newcommand{\referencename}{\referencenameEN}
   \newcommand{\summaryname}{\summarynameEN}
+  \newcommand{\examname}{\examnameEN}
 \fi
 
 % ==============================================================================
@@ -565,6 +793,7 @@
 \newcounter{pitfallctr}[section]
 \newcounter{referencectr}[section]
 \newcounter{summaryctr}[section]
+\newcounter{examctr}[section]
 
 \renewcommand{\thetheoremctr}{\thesection.\arabic{theoremctr}}
 \renewcommand{\thedefinitionctr}{\thesection.\arabic{definitionctr}}
@@ -583,212 +812,356 @@
 \renewcommand{\thepitfallctr}{\thesection.\arabic{pitfallctr}}
 \renewcommand{\thereferencectr}{\thesection.\arabic{referencectr}}
 \renewcommand{\thesummaryctr}{\thesection.\arabic{summaryctr}}
+\renewcommand{\theexamctr}{\thesection.\arabic{examctr}}
 
 \numberwithin{equation}{section}
 
 % ==============================================================================
 %                              Theorem Environments
 % ==============================================================================
-\newtcolorbox{thmbox}[1][]{mythm, title={#1}}
-\newtcolorbox{defbox}[1][]{mydef, title={#1}}
-\newtcolorbox{notbox}[1][]{mynote, title={#1}}
+\newtcolorbox{thmbox}[1][]{mythm, #1}
+\newtcolorbox{defbox}[1][]{mydef, #1}
+\newtcolorbox{notbox}[1][]{mynote, #1}
 \newtcolorbox{proofbox}[1][]{myproof, #1}
 
 % Theorem
-\NewDocumentEnvironment{theorem}{ O{} }{%
+\NewDocumentEnvironment{theorem_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{theoremctr}%
   \ifstrempty{#1}%
-  {\begin{thmbox}[\theoremname\ \thetheoremctr.]}%
-  {\begin{thmbox}[\theoremname\ \thetheoremctr.\ (#1)]}%
+  {\begin{thmbox}[title={\theoremname\ \thetheoremctr.}]}%
+  {\begin{thmbox}[title={\theoremname\ \thetheoremctr.\ (#1)}]}%
   \applyenvcolor{thmline!85!black}\itshape
-}{\end{thmbox}}
+}{\end{thmbox}\setlastclosedbox{thmline}{thmback}}
 
 % Lemma
-\NewDocumentEnvironment{lemma}{ O{} }{%
+\NewDocumentEnvironment{lemma_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{lemmactr}%
   \ifstrempty{#1}%
-  {\begin{thmbox}[\lemmaname\ \thelemmactr.]}%
-  {\begin{thmbox}[\lemmaname\ \thelemmactr.\ (#1)]}%
+  {\begin{thmbox}[title={\lemmaname\ \thelemmactr.}]}%
+  {\begin{thmbox}[title={\lemmaname\ \thelemmactr.\ (#1)}]}%
   \applyenvcolor{thmline!85!black}\itshape
-}{\end{thmbox}}
+}{\end{thmbox}\setlastclosedbox{thmline}{thmback}}
 
 % Proposition
-\NewDocumentEnvironment{proposition}{ O{} }{%
+\NewDocumentEnvironment{proposition_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{propositionctr}%
   \ifstrempty{#1}%
-  {\begin{thmbox}[\propositionname\ \thepropositionctr.]}%
-  {\begin{thmbox}[\propositionname\ \thepropositionctr.\ (#1)]}%
+  {\begin{thmbox}[title={\propositionname\ \thepropositionctr.}]}%
+  {\begin{thmbox}[title={\propositionname\ \thepropositionctr.\ (#1)}]}%
   \applyenvcolor{thmline!85!black}\itshape
-}{\end{thmbox}}
+}{\end{thmbox}\setlastclosedbox{thmline}{thmback}}
 
 % Corollary
-\NewDocumentEnvironment{corollary}{ O{} }{%
+\NewDocumentEnvironment{corollary_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{corollaryctr}%
   \ifstrempty{#1}%
-  {\begin{thmbox}[\corollaryname\ \thecorollaryctr.]}%
-  {\begin{thmbox}[\corollaryname\ \thecorollaryctr.\ (#1)]}%
+  {\begin{thmbox}[title={\corollaryname\ \thecorollaryctr.}]}%
+  {\begin{thmbox}[title={\corollaryname\ \thecorollaryctr.\ (#1)}]}%
   \applyenvcolor{thmline!85!black}\itshape
-}{\end{thmbox}}
+}{\end{thmbox}\setlastclosedbox{thmline}{thmback}}
 
 % Result
-\NewDocumentEnvironment{result}{ O{} }{%
+\NewDocumentEnvironment{result_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{resultctr}%
   \ifstrempty{#1}%
-  {\begin{thmbox}[\resultname\ \theresultctr.]}%
-  {\begin{thmbox}[\resultname\ \theresultctr.\ (#1)]}%
+  {\begin{thmbox}[title={\resultname\ \theresultctr.}]}%
+  {\begin{thmbox}[title={\resultname\ \theresultctr.\ (#1)}]}%
   \applyenvcolor{thmline!85!black}\itshape
-}{\end{thmbox}}
+}{\end{thmbox}\setlastclosedbox{thmline}{thmback}}
 
 % Definition
-\NewDocumentEnvironment{definition}{ O{} }{%
+\NewDocumentEnvironment{definition_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{definitionctr}%
   \ifstrempty{#1}%
-  {\begin{defbox}[\definitionname\ \thedefinitionctr.]}%
-  {\begin{defbox}[\definitionname\ \thedefinitionctr.\ (#1)]}%
+  {\begin{defbox}[title={\definitionname\ \thedefinitionctr.}]}%
+  {\begin{defbox}[title={\definitionname\ \thedefinitionctr.\ (#1)}]}%
   \applyenvcolor{defline!90!black}
-}{\end{defbox}}
+}{\end{defbox}\setlastclosedbox{defline}{defback}}
 
 % Postulate
-\NewDocumentEnvironment{postulate}{ O{} }{%
+\NewDocumentEnvironment{postulate_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{postulatectr}%
   \ifstrempty{#1}%
-  {\begin{defbox}[\postulatename\ \thepostulatectr.]}%
-  {\begin{defbox}[\postulatename\ \thepostulatectr.\ (#1)]}%
+  {\begin{defbox}[title={\postulatename\ \thepostulatectr.}]}%
+  {\begin{defbox}[title={\postulatename\ \thepostulatectr.\ (#1)}]}%
   \applyenvcolor{defline!90!black}
-}{\end{defbox}}
+}{\end{defbox}\setlastclosedbox{defline}{defback}}
 
 % Note
-\NewDocumentEnvironment{note}{ O{} }{%
+\NewDocumentEnvironment{note_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{notectr}%
   \ifstrempty{#1}%
-  {\begin{notbox}[\notename\ \thenotectr.]}%
-  {\begin{notbox}[\notename\ \thenotectr.\ (#1)]}%
+  {\begin{notbox}[title={\notename\ \thenotectr.}]}%
+  {\begin{notbox}[title={\notename\ \thenotectr.\ (#1)}]}%
   \applyenvcolor{noteline!90!black}
-}{\end{notbox}}
+}{\end{notbox}\setlastclosedbox{noteline}{noteback}}
 
 % Problem
-\newtcolorbox{probbox}[1][]{myproblem, title={#1}}
+\newtcolorbox{probbox}[1][]{myproblem, #1}
 
-\NewDocumentEnvironment{problem}{ O{} }{%
+\NewDocumentEnvironment{problem_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{problemctr}%
   \ifstrempty{#1}%
-  {\begin{probbox}[\problemname\ \theproblemctr.]}%
-  {\begin{probbox}[\problemname\ \theproblemctr.\ (#1)]}%
+  {\begin{probbox}[title={\problemname\ \theproblemctr.}]}%
+  {\begin{probbox}[title={\problemname\ \theproblemctr.\ (#1)}]}%
   \applyenvcolor{probline!90!black}
-}{\end{probbox}}
+}{\end{probbox}\setlastclosedbox{probline}{probback}}
 
-\NewDocumentEnvironment{example}{ O{} }{%
+\NewDocumentEnvironment{example_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{problemctr}%
   \ifstrempty{#1}%
-  {\begin{probbox}[Example\ \theproblemctr.]}%
-  {\begin{probbox}[Example\ \theproblemctr.\ (#1)]}%
+  {\begin{probbox}[title={Example\ \theproblemctr.}]}%
+  {\begin{probbox}[title={Example\ \theproblemctr.\ (#1)}]}%
   \applyenvcolor{probline!90!black}
-}{\end{probbox}}
+}{\end{probbox}\setlastclosedbox{probline}{probback}}
 
 % New Environments
-\newtcolorbox{objbox}[1][]{myobjective, title={#1}}
-\NewDocumentEnvironment{objective}{ O{} }{%
+\newtcolorbox{objbox}[1][]{myobjective, #1}
+\NewDocumentEnvironment{objective_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{objectivectr}%
   \ifstrempty{#1}%
-  {\begin{objbox}[\objectivename\ \theobjectivectr.]}%
-  {\begin{objbox}[\objectivename\ \theobjectivectr.\ (#1)]}%
+  {\begin{objbox}[title={\objectivename\ \theobjectivectr.}]}%
+  {\begin{objbox}[title={\objectivename\ \theobjectivectr.\ (#1)}]}%
   \applyenvcolor{objline!90!black}
-}{\end{objbox}}
+}{\end{objbox}\setlastclosedbox{objline}{objback}}
 
-\newtcolorbox{intbox}[1][]{myintuition, title={#1}}
-\NewDocumentEnvironment{intuition}{ O{} }{%
+\newtcolorbox{intbox}[1][]{myintuition, #1}
+\NewDocumentEnvironment{intuition_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{intuitionctr}%
   \ifstrempty{#1}%
-  {\begin{intbox}[\intuitionname\ \theintuitionctr.]}%
-  {\begin{intbox}[\intuitionname\ \theintuitionctr.\ (#1)]}%
+  {\begin{intbox}[title={\intuitionname\ \theintuitionctr.}]}%
+  {\begin{intbox}[title={\intuitionname\ \theintuitionctr.\ (#1)}]}%
   \applyenvcolor{intline!90!black}
-}{\end{intbox}}
+}{\end{intbox}\setlastclosedbox{intline}{intback}}
 
-\newtcolorbox{algbox}[1][]{myalgorithm, title={#1}}
-\NewDocumentEnvironment{algo}{ O{} }{%
+\newtcolorbox{algbox}[1][]{myalgorithm, #1}
+\NewDocumentEnvironment{algo_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{algorithmctr}%
   \ifstrempty{#1}%
-  {\begin{algbox}[\algorithmname\ \thealgorithmctr.]}%
-  {\begin{algbox}[\algorithmname\ \thealgorithmctr.\ (#1)]}%
+  {\begin{algbox}[title={\algorithmname\ \thealgorithmctr.}]}%
+  {\begin{algbox}[title={\algorithmname\ \thealgorithmctr.\ (#1)}]}%
   \applyenvcolor{algline!90!black}
-}{\end{algbox}}
+}{\end{algbox}\setlastclosedbox{algline}{algback}}
 
-\newtcolorbox{appbox}[1][]{myapplication, title={#1}}
-\NewDocumentEnvironment{application}{ O{} }{%
+\newtcolorbox{appbox}[1][]{myapplication, #1}
+\NewDocumentEnvironment{application_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{applicationctr}%
   \ifstrempty{#1}%
-  {\begin{appbox}[\applicationname\ \theapplicationctr.]}%
-  {\begin{appbox}[\applicationname\ \theapplicationctr.\ (#1)]}%
+  {\begin{appbox}[title={\applicationname\ \theapplicationctr.}]}%
+  {\begin{appbox}[title={\applicationname\ \theapplicationctr.\ (#1)}]}%
   \applyenvcolor{appline!90!black}
-}{\end{appbox}}
+}{\end{appbox}\setlastclosedbox{appline}{appback}}
 
-\newtcolorbox{histbox}[1][]{myhistory, title={#1}}
-\NewDocumentEnvironment{history}{ O{} }{%
+\newtcolorbox{histbox}[1][]{myhistory, #1}
+\NewDocumentEnvironment{history_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{historyctr}%
   \ifstrempty{#1}%
-  {\begin{histbox}[\historyname\ \thehistoryctr.]}%
-  {\begin{histbox}[\historyname\ \thehistoryctr.\ (#1)]}%
+  {\begin{histbox}[title={\historyname\ \thehistoryctr.}]}%
+  {\begin{histbox}[title={\historyname\ \thehistoryctr.\ (#1)}]}%
   \applyenvcolor{histline!90!black}
-}{\end{histbox}}
+}{\end{histbox}\setlastclosedbox{histline}{histback}}
 
-\newtcolorbox{pitbox}[1][]{mypitfall, title={#1}}
-\NewDocumentEnvironment{pitfall}{ O{} }{%
+\newtcolorbox{pitbox}[1][]{mypitfall, #1}
+\NewDocumentEnvironment{pitfall_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{pitfallctr}%
   \ifstrempty{#1}%
-  {\begin{pitbox}[\pitfallname\ \thepitfallctr.]}%
-  {\begin{pitbox}[\pitfallname\ \thepitfallctr.\ (#1)]}%
+  {\begin{pitbox}[title={\pitfallname\ \thepitfallctr.}]}%
+  {\begin{pitbox}[title={\pitfallname\ \thepitfallctr.\ (#1)}]}%
   \applyenvcolor{pitfallline!90!black}
-}{\end{pitbox}}
+}{\end{pitbox}\setlastclosedbox{pitfallline}{pitfallback}}
 
-\newtcolorbox{refbox}[1][]{myreference, title={#1}}
-\NewDocumentEnvironment{keyreference}{ O{} }{%
+\newtcolorbox{refbox}[1][]{myreference, #1}
+\NewDocumentEnvironment{keyreference_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{referencectr}%
   \ifstrempty{#1}%
-  {\begin{refbox}[\referencename\ \thereferencectr.]}%
-  {\begin{refbox}[\referencename\ \thereferencectr.\ (#1)]}%
+  {\begin{refbox}[title={\referencename\ \thereferencectr.}]}%
+  {\begin{refbox}[title={\referencename\ \thereferencectr.\ (#1)}]}%
   \applyenvcolor{refline!90!black}
-}{\end{refbox}}
+}{\end{refbox}\setlastclosedbox{refline}{refback}}
 
-\newtcolorbox{sumbox}[1][]{mysummary, title={#1}}
-\NewDocumentEnvironment{summary}{ O{} }{%
+\newtcolorbox{sumbox}[1][]{mysummary, #1}
+\NewDocumentEnvironment{summary_internal}{ O{} }{%
+  \addnestedspace
   \refstepcounter{summaryctr}%
   \ifstrempty{#1}%
-  {\begin{sumbox}[\summaryname\ \thesummaryctr.]}%
-  {\begin{sumbox}[\summaryname\ \thesummaryctr.\ (#1)]}%
+  {\begin{sumbox}[title={\summaryname\ \thesummaryctr.}]}%
+  {\begin{sumbox}[title={\summaryname\ \thesummaryctr.\ (#1)}]}%
   \applyenvcolor{sumline!90!black}
-}{\end{sumbox}}
+}{\end{sumbox}\setlastclosedbox{sumline}{sumback}}
+
+\newtcolorbox{exambox}[1][]{myexam, #1}
+\NewDocumentEnvironment{exam_internal}{ O{} }{%
+  \addnestedspace
+  \refstepcounter{examctr}%
+  \ifstrempty{#1}%
+  {\begin{exambox}[title={\examname\ \theexamctr.}]}%
+  {\begin{exambox}[title={\examname\ \theexamctr.\ (#1)}]}%
+  \applyenvcolor{examline!90!black}
+}{\end{exambox}\setlastclosedbox{examline}{examback}}
 
 % Starred versions
-\NewDocumentEnvironment{theorem*}{ O{} }{%
+\NewDocumentEnvironment{theorem*_internal}{ O{} }{%
+  \addnestedspace
   \ifstrempty{#1}%
-  {\begin{thmbox}[\theoremname.]}%
-  {\begin{thmbox}[\theoremname.\ (#1)]}%
+  {\begin{thmbox}[title={\theoremname.}]}%
+  {\begin{thmbox}[title={\theoremname.\ (#1)}]}%
   \applyenvcolor{thmline!85!black}\itshape
-}{\end{thmbox}}
-\NewDocumentEnvironment{lemma*}{ O{} }{%
+}{\end{thmbox}\setlastclosedbox{thmline}{thmback}}
+
+\NewDocumentEnvironment{lemma*_internal}{ O{} }{%
+  \addnestedspace
   \ifstrempty{#1}%
-  {\begin{thmbox}[\lemmaname.]}%
-  {\begin{thmbox}[\lemmaname.\ (#1)]}%
+  {\begin{thmbox}[title={\lemmaname.}]}%
+  {\begin{thmbox}[title={\lemmaname.\ (#1)}]}%
   \applyenvcolor{thmline!85!black}\itshape
-}{\end{thmbox}}
-\NewDocumentEnvironment{definition*}{ O{} }{%
+}{\end{thmbox}\setlastclosedbox{thmline}{thmback}}
+
+\NewDocumentEnvironment{definition*_internal}{ O{} }{%
+  \addnestedspace
   \ifstrempty{#1}%
-  {\begin{defbox}[\definitionname.]}%
-  {\begin{defbox}[\definitionname.\ (#1)]}%
+  {\begin{defbox}[title={\definitionname.}]}%
+  {\begin{defbox}[title={\definitionname.\ (#1)}]}%
   \applyenvcolor{defline!90!black}
-}{\end{defbox}}
-\NewDocumentEnvironment{note*}{ O{} }{%
+}{\end{defbox}\setlastclosedbox{defline}{defback}}
+
+\NewDocumentEnvironment{note*_internal}{ O{} }{%
+  \addnestedspace
   \ifstrempty{#1}%
-  {\begin{notbox}[\notename.]}%
-  {\begin{notbox}[\notename.\ (#1)]}%
+  {\begin{notbox}[title={\notename.}]}%
+  {\begin{notbox}[title={\notename.\ (#1)}]}%
   \applyenvcolor{noteline!90!black}
-}{\end{notbox}}
-\NewDocumentEnvironment{problem*}{ O{} }{%
+}{\end{notbox}\setlastclosedbox{noteline}{noteback}}
+
+\NewDocumentEnvironment{problem*_internal}{ O{} }{%
+  \addnestedspace
   \ifstrempty{#1}%
-  {\begin{probbox}[\problemname.]}%
-  {\begin{probbox}[\problemname.\ (#1)]}%
+  {\begin{probbox}[title={\problemname.}]}%
+  {\begin{probbox}[title={\problemname.\ (#1)}]}%
   \applyenvcolor{probline!90!black}
-}{\end{probbox}}
+}{\end{probbox}\setlastclosedbox{probline}{probback}}
+
+% ==============================================================================
+%                              Flat Wrappers for Nesting Support
+% ==============================================================================
+
+\NewDocumentEnvironment{theorem}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("theorem", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+\NewDocumentEnvironment{theorem*}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("theorem", true, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{lemma}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("lemma", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+\NewDocumentEnvironment{lemma*}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("lemma", true, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{proposition}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("proposition", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{corollary}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("corollary", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{result}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("result", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{definition}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("definition", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+\NewDocumentEnvironment{definition*}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("definition", true, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{postulate}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("postulate", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{note}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("note", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+\NewDocumentEnvironment{note*}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("note", true, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{problem}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("problem", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+\NewDocumentEnvironment{problem*}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("problem", true, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{example}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("example", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{objective}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("objective", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{intuition}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("intuition", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{algo}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("algo", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{application}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("application", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{history}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("history", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{pitfall}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("pitfall", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{keyreference}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("keyreference", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+\NewDocumentEnvironment{summary}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("summary", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
+
+
+% Sekce uvnitř boxu „Jak uspět`` --- seznam bez odrážek. Svislé oddělení dělá
+% seznam, nikoli odstavcové zlomy, takže je nezávislé na tom, jak se s~tělem
+% boxu vypořádá nested_parser.lua.
+
+% Run-in nadpis uvnitř boxu „Jak uspět“.
+%
+% Musí být v \mbox, nikoli jen v {}: breakable tcolorbox dělí obsah pomocí
+% \vsplit a barevný whatsit, který stojí na začátku prvního odstavce
+% pokračovacího fragmentu, se přitom ztratí --- nadpis pak vyjde černě.
+% (Proto zůstávají obarvené odrážky a čísla položek: ty jsou uvnitř labelboxu
+% seznamu, tedy uvnitř hboxu, který \vsplit nerozebírá.) Zabalením do \mbox
+% je push i pop barvy uzavřen v jednom nedělitelném hboxu a přechod přes
+% stránku přežije. Nadpisy jsou krátké (max ~37 znaků), takže zákaz zlomu
+% uvnitř nevadí.
+%
+% Barva je navíc zapsána doslovně, ne přes \envcolorname: ten se v \textbf
+% expanduje až v místě užití, takže se může rozejít s barvou boxu.
+\newcommand{\exlabel}[1]{\mbox{\bfseries\color{examline!90!black}#1}}
+\newenvironment{examparts}
+  {\begin{list}{}{%
+      \setlength{\leftmargin}{0pt}%
+      \setlength{\rightmargin}{0pt}%
+      \setlength{\labelwidth}{0pt}%
+      \setlength{\labelsep}{0pt}%
+      \setlength{\itemindent}{0pt}%
+      \setlength{\listparindent}{0pt}%
+      \setlength{\topsep}{0.5em}%
+      \setlength{\partopsep}{0pt}%
+      \setlength{\parsep}{0pt}%
+      \setlength{\itemsep}{0.5em}%
+      \renewcommand{\makelabel}[1]{}%
+   }}
+  {\end{list}}
+
+\NewDocumentEnvironment{exam}{ O{} +b }
+  {\directlua{nested_parser.process_nested_env("exam", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
 
 % ==============================================================================
 %                              Proof Environment
@@ -796,21 +1169,131 @@
 \newtcolorbox{solutionbox}[1][]{mysolution, #1}
 
 \renewenvironment{proof}[1][\proofenvname]{%
+  \boolfalse{isnestedboxbool}%
+  \ifnum\value{tcblayer}>1\relax
+    \booltrue{isnestedboxbool}%
+  \fi
+  \ifdefstring{\isnestedbox}{true}{%
+    \booltrue{isnestedboxbool}%
+  }{}%
+  \ifbool{isnestedboxbool}{%
+    \colorlet{proofcolor}{thmline!50!parentlinecolor}%
+  }{%
+    \colorlet{proofcolor}{thmline}%
+  }%
   \begin{proofbox}%
-  \applyenvcolor{thmline}
-  {\titlefont\itshape\color{thmline}#1.}\enspace\ignorespaces
+  \applyenvcolor{proofcolor}%
+  {\titlefont\itshape\color{proofcolor}#1.}\enspace\ignorespaces
 }{%
-  \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{thmline}\proofended}\par
+  \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{proofcolor}\proofended}\par
   \end{proofbox}%
+  \setlastclosedbox{thmline}{thmback}%
 }
 
 \newenvironment{solution}[1][\solutionname]{%
+  \boolfalse{isnestedboxbool}%
+  \ifnum\value{tcblayer}>1\relax
+    \booltrue{isnestedboxbool}%
+  \fi
+  \ifdefstring{\isnestedbox}{true}{%
+    \booltrue{isnestedboxbool}%
+  }{}%
+  \ifbool{isnestedboxbool}{%
+    \colorlet{solcolor}{probline!50!parentlinecolor}%
+  }{%
+    \colorlet{solcolor}{probline}%
+  }%
   \begin{solutionbox}%
-  \applyenvcolor{probline}
-  {\titlefont\itshape\color{probline}#1.}\enspace\ignorespaces
+  \applyenvcolor{solcolor}%
+  {\titlefont\itshape\color{solcolor}#1.}\enspace\ignorespaces
 }{%
-  \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{probline}\solutionended}\par
+  \par
   \end{solutionbox}%
+  \setlastclosedbox{probline}{probback}%
+}
+
+% Visual Nesting environments (to solve breakability issues of nested boxes)
+\newtcolorbox{nestedproofbox}[1][]{
+  enhanced,
+  enforce breakable,
+  nobeforeafter,
+  ignore nobreak,
+  boxrule=0pt,
+  frame hidden,
+  code={%
+    \xglobal\colorlet{mixedline}{thmline!50!parentlinecolor}%
+    \xglobal\colorlet{mixedborder}{mixedline!50!white}%
+    \xglobal\colorlet{mixedback}{mixedline!18!white}%
+    \tcbset{
+      borderline west={3pt}{0pt}{parentlinecolor},
+      borderline west={3pt}{13pt}{mixedborder},
+      interior style={left color=mixedback, right color=white, draw=none},
+      underlay unbroken=\nestedgapfill,
+      underlay first=\nestedgapfill,
+      underlay middle=\nestedgapfill,
+      underlay last=\nestedgapfill
+    }%
+  },
+  arc=0pt,
+  left=23pt,
+  right=0pt,
+  top=8pt,
+  bottom=8pt,
+  after skip=0pt,
+  fontupper=\small,
+  #1
+}
+
+\newenvironment{nestedproof}[1][\proofenvname]{%
+  \colorlet{proofmixcolor}{thmline!50!parentlinecolor}%
+  \begin{nestedproofbox}%
+  \applyenvcolor{proofmixcolor}%
+  {\titlefont\itshape\color{proofmixcolor}#1.}\enspace\ignorespaces
+}{%
+  \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{proofmixcolor}\proofended}\par
+  \end{nestedproofbox}%
+}
+
+\newtcolorbox{nestedsolutionbox}[1][]{
+  enhanced,
+  enforce breakable,
+  nobeforeafter,
+  ignore nobreak,
+  boxrule=0pt,
+  frame hidden,
+  code={%
+    \xglobal\colorlet{mixedline}{probline!50!parentlinecolor}%
+    \xglobal\colorlet{mixedborder}{mixedline!50!white}%
+    \xglobal\colorlet{mixedback}{mixedline!18!white}%
+    \tcbset{
+      borderline west={3pt}{0pt}{parentlinecolor},
+      borderline west={3pt}{13pt}{mixedborder},
+      interior style={left color=mixedback, right color=white, draw=none},
+      underlay unbroken=\nestedgapfill,
+      underlay first=\nestedgapfill,
+      underlay middle=\nestedgapfill,
+      underlay last=\nestedgapfill
+    }%
+  },
+  arc=0pt,
+  left=23pt,
+  right=0pt,
+  top=8pt,
+  bottom=8pt,
+  before skip=-\dimexpr\parskip\relax,
+  after skip=0pt,
+  fontupper=\small,
+  #1
+}
+
+\newenvironment{nestedsolution}[1][\solutionname]{%
+  \colorlet{solmixcolor}{probline!50!parentlinecolor}%
+  \begin{nestedsolutionbox}%
+  \applyenvcolor{solmixcolor}%
+  {\titlefont\itshape\color{solmixcolor}#1.}\enspace\ignorespaces
+}{%
+  \par
+  \end{nestedsolutionbox}%
 }
 
 % Overview box for section summaries
@@ -830,7 +1313,7 @@
   fonttitle=\bfseries\sffamily,
   attach boxed title to top left={yshift=-\tcboxedtitleheight/2, xshift=5mm},
   boxed title style={
-      colback=accent!5,
+      interior style={top color=white, bottom color=accent!5},
       frame hidden,
     },
   after skip=0pt,
@@ -854,7 +1337,7 @@
   fonttitle=\bfseries\sffamily,
   attach boxed title to top left={yshift=-\tcboxedtitleheight/2, xshift=5mm},
   boxed title style={
-      colback=accent!5,
+      interior style={top color=white, bottom color=accent!5},
       frame hidden,
     },
   top=4pt,
@@ -887,7 +1370,32 @@
 %                              Document Settings
 % ==============================================================================
 \setlength\parindent{0pt}
-\setlength\parskip{0.5em}
+
+% --- Pružné mezery mezi odstavci ---------------------------------------------
+% Pozor: dřív tu bylo rigidní \parskip{0.5em}, které přebilo pružnou hodnotu
+% nastavenou u~\usepackage{parskip} výše. Rigidní mezera znamená, že stránka
+% nemá \emph{žádnou} vůli --- buď se řádek vejde, nebo se celý přesune.
+% Protože boxy mají before/after skip = 0pt, je právě \parskip tím, co je od
+% sebe odděluje; pružnost se tedy propíše přímo do mezer mezi boxy.
+% Se~ztrátou 0,25em na~mezeru a~~15 mezerami na~stránku získá sazeč zhruba
+% 2 řádky vůle --- často přesně tolik, kolik chybí, aby se box vešel celý.
+\setlength\parskip{0.5em plus 0.2em minus 0.25em}
+
+% --- Penalty: kde se smí lámat stránka ----------------------------------------
+% Penalta = cena zlomu v daném místě. Záporná = zlom je vítaný, 0 = neutrální,
+% kladná = nežádoucí, >= 10000 = zakázáno, <= -10000 = vynuceno.
+% TeX vybírá zlom s nejmenším součtem badness + penalty, takže tímhle se
+% neurčuje zlom napevno, jen se posouvá jeho cena.
+\clubpenalty=10000          % osiřelý PRVNÍ řádek odstavce dole na stránce
+\widowpenalty=10000         % osamocený POSLEDNÍ řádek odstavce nahoře
+\displaywidowpenalty=10000  % totéž kolem displayových rovnic
+\brokenpenalty=9999         % nelámat stránku hned po~rozděleném slově
+\interlinepenalty=150       % mírná daň za~zlom uvnitř odstavce:
+% při shodné kvalitě raději zlom MEZI odstavci (tj. mezi boxy) než uvnitř.
+% Schválně jen 150 --- vyšší hodnota by u~dlouhých boxů (Jak uspět, Shrnutí)
+% bránila i~zlomům, které jsou nutné, a~vyráběla by podtečené stránky.
+
+\gdef\afternestedbox{false}
 
 % ==============================================================================
 %                              Title Page

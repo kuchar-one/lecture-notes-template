@@ -2,6 +2,7 @@
 $pdf_mode = 4;  # Use lualatex
 $out_dir = 'build';
 $aux_dir = 'build';
+$synctex = 1;
 
-# Clean up additional generated files
-$clean_ext = 'synctex.gz run.xml';
+# Ignore lua_debug.log to prevent infinite latexmk loops
+push @file_ignore_pattern, '^lua_debug\\.log$';

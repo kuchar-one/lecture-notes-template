@@ -139,6 +139,23 @@ Here is an example of a clean, minimalist geometric figure (Venn Diagram) using 
   We have successfully introduced all 8 new environments and demonstrated the Prism Clarity aesthetic!
 \end{summary}
 
+\subsection{Advanced Features}
+
+\begin{theorem}[Nesting Example]
+  The template now supports seamless nesting of environments via \texttt{nested\_parser.lua}.
+  \begin{proof}
+    This is a nested proof within a theorem. Notice how the left border elegantly combines the colors of both the parent theorem and the child proof.
+  \end{proof}
+\end{theorem}
+
+\begin{exam}[Exam Strategy]
+  \exlabel{Tip:} The \texttt{exam} environment is perfect for highlighting key takeaways or strategies for exams.
+  \begin{examparts}
+    \item Use the \verb|\exlabel| command for bold, colored inline headings.
+    \item The \texttt{examparts} environment provides a clean, unbulleted list for structured advice.
+  \end{examparts}
+\end{exam}
+
 
 % ==============================================================================
 \end{document}
