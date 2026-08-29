@@ -4,7 +4,7 @@
 % Build: latexmk | Language: [english] or [czech] in \usepackage
 % ==============================================================================
 
-\documentclass[12pt, letterpaper]{article}
+\documentclass[12pt, letterpaper, twoside]{book}
 
 % Import all styling, math, and custom commands
 % Set your language here: [english] or [czech]
@@ -22,7 +22,8 @@
 {\today}
 
 % --- Content ---
-\section{Introduction}
+\chapter{Introduction}
+\section{Core Concepts}
 
 \begin{objective}
   \begin{itemize}
@@ -42,11 +43,15 @@
 \begin{definition}[Sample Definition]
   This is a sample definition using the custom \texttt{tcolorbox} environment.
 \end{definition}
+\sidenote{This is a sidenote placed elegantly in the wide margin, characteristic of Tufte textbooks. It can contain extra details, citations, or references.}
 
 \begin{theorem}[Sample Theorem]
   This is a sample theorem.
 \end{theorem}
-
+\begin{intertextbox}
+This is some normal text after the theorem.\sidenotemark
+\end{intertextbox}
+\sidenotetext{Here is a second sidenote on the same page. It should be marked with a dagger ($\dagger$) since it's the second note.}
 \begin{intuition}
   Before jumping into the rigorous proof, here is the basic idea of why the theorem holds true.
 \end{intuition}
@@ -72,6 +77,15 @@
 \begin{application}[Engineering]
   This theorem is heavily used in structural engineering to calculate load capacities.
 \end{application}
+
+\marginnote{%
+  \centering
+  \begin{tikzpicture}
+    \draw[thick, accent, fill=accent!20] (0,0) circle (1.2cm);
+    \node[accentdark, align=center] at (0,0) {\textbf{Tufte}\\\textbf{Margin}};
+  \end{tikzpicture}
+  \captionof{figure}{A margin figure placed perfectly in the wide column.}
+}
 
 \begin{history}
   First discovered in 1894, this concept revolutionized the field.
@@ -99,9 +113,10 @@
 
 \subsection{Minimalist Aesthetics}
 
+\begin{intertextbox}
 Here is an example of a minimalist table using alternating row shading and clean rules.
-
-\begin{table}[h]
+\end{intertextbox}
+\begin{table}[htbp]
   \centering
   \rowcolors{2}{gray!10}{white}
   \begin{tabular}{llc}
@@ -116,9 +131,10 @@ Here is an example of a minimalist table using alternating row shading and clean
   \caption{A clean, minimalist table without vertical rules.}
 \end{table}
 
+\begin{intertextbox}
 Here is an example of a clean, minimalist geometric figure (Venn Diagram) using TikZ.
-
-\begin{figure}[h]
+\end{intertextbox}
+\begin{figure}[htbp]
   \centering
   \begin{tikzpicture}
     % Left circle
@@ -136,10 +152,10 @@ Here is an example of a clean, minimalist geometric figure (Venn Diagram) using 
 \end{figure}
 
 \begin{summary}
-  We have successfully introduced all 8 new environments and demonstrated the Prism Clarity aesthetic!
+  We have successfully introduced all 8 new environments, demonstrated the Prism Clarity aesthetic, and shown how Tufte-style margin notes and full-width blocks can be used!
 \end{summary}
 
-\subsection{Advanced Features}
+\section{Advanced Features}
 
 \begin{theorem}[Nesting Example]
   The template now supports seamless nesting of environments via \texttt{nested\_parser.lua}.
@@ -157,6 +173,7 @@ Here is an example of a clean, minimalist geometric figure (Venn Diagram) using 
 \end{exam}
 
 
+\clearpage
 % ==============================================================================
 \end{document}
 % ==============================================================================

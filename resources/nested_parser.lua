@@ -190,12 +190,10 @@ function M.process_nested_env(env_name, is_starred, title_arg, body, is_nested_s
         tex.sprint(string.format("\\begin{%s}%s%s\\end{%s}", env_internal_name, opt_arg, fix_pars(block.content), env_internal_name))
         is_first_normal = false
       else
-        -- Render reopened box (flat structure, title={}, before skip=-\dimexpr\parskip\relax, and spacing)
-        local shape_cmd = mapping.itshape and "\\itshape" or ""
+        -- Render reopened box (decoupled intertextbox with nested line enabled)
         tex.sprint(string.format(
-          "\\gdef\\nextisnested{%s}\\begin{%s}[title={}, before skip=-\\dimexpr\\parskip\\relax]\\applyenvcolor{%s}%s\\vspace{0.8em}%s\\end{%s}\\xglobal\\colorlet{lastclosedboxline}{%s}\\xglobal\\colorlet{lastclosedboxback}{%s}\\gdef\\afternestedbox{false}\\relax ",
-          next_is_nested_val, mapping.box, mapping.color, shape_cmd, fix_pars(block.content), mapping.box,
-          mapping.line_color, mapping.back_color
+          "\\gdef\\nextisnested{%s}\\gdef\\isnestedbox{true}\\begin{intertextbox}%s\\end{intertextbox}\\gdef\\isnestedbox{false}\\gdef\\afternestedbox{false}\\relax ",
+          next_is_nested_val, fix_pars(block.content)
         ))
       end
     else

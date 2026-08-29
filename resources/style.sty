@@ -11,7 +11,7 @@
 % ==============================================================================
 %                              Mathematics
 % ==============================================================================
-\RequirePackage{amsmath,amsthm}
+\RequirePackage{amsmath,amssymb,amsthm}
 \RequirePackage{mathtools}
 \RequirePackage{mathrsfs}
 \RequirePackage{physics}
@@ -31,14 +31,21 @@
     breaklinks=true
 }
 \RequirePackage[
-  top=1.4cm,
-  bottom=0.2cm,
-  left=0.7cm,
-  right=1cm,
-  headheight=24pt,
-  headsep=1em,
-  footskip=0em
+  paperwidth=10.5in,
+  paperheight=11in,
+  inner=1in,
+  top=1in,
+  headsep=2\baselineskip,
+  textwidth=32pc,
+  marginparsep=2pc,
+  marginparwidth=14pc,
+  textheight=44\baselineskip,
+  headheight=\baselineskip,
+  twoside
 ]{geometry}
+
+\RequirePackage{sidenotes}
+\RequirePackage{marginnote}
 
 % ==============================================================================
 %                              Typography
@@ -158,7 +165,6 @@
 \newcommand{\nestedgapfill}{%
   \fill[parentbackcolor, draw=none] (frame.south west) rectangle ([xshift=13pt]frame.north west);
   \fill[parentlinecolor, draw=none] (frame.south west) rectangle ([xshift=3pt]frame.north west);
-  \fill[mixedborder, draw=none] ([xshift=13pt]frame.south west) rectangle ([xshift=16pt]frame.north west);
 }
 
 \newcommand{\setlastclosedbox}[2]{%
@@ -230,7 +236,6 @@
           arc=0pt,
           left=23pt,
           right=0pt,
-          borderline west={3pt}{0pt}{parentlinecolor},
           borderline west={3pt}{13pt}{mixedborder},
           interior style={left color=mixedback, right color=white, draw=none},
           underlay unbroken=\nestedgapfill,
@@ -246,7 +251,7 @@
           \tcbset{top=8pt}%
         }%
         \ifdefstring{\nextisnested}{true}{%
-          \tcbset{bottom=3pt}%
+          \tcbset{bottom=6pt}%
         }{%
           \tcbset{bottom=8pt}%
         }%
@@ -355,7 +360,6 @@
             arc=0pt,
             left=23pt,
             right=0pt,
-            borderline west={3pt}{0pt}{parentlinecolor},
             borderline west={3pt}{13pt}{mixedborder},
             interior style={left color=mixedback, right color=white, draw=none},
             underlay unbroken=\nestedgapfill,
@@ -366,12 +370,12 @@
             after skip=0pt,
           }%
           \ifdefstring{\afternestedbox}{true}{%
-            \tcbset{top=3pt}%
+            \tcbset{top=6pt}%
           }{%
             \tcbset{top=8pt}%
           }%
           \ifdefstring{\nextisnested}{true}{%
-            \tcbset{bottom=3pt}%
+            \tcbset{bottom=6pt}%
           }{%
             \tcbset{bottom=8pt}%
           }%
@@ -424,7 +428,6 @@
             arc=0pt,
             left=23pt,
             right=0pt,
-            borderline west={3pt}{0pt}{parentlinecolor},
             borderline west={3pt}{13pt}{mixedborder},
             interior style={left color=mixedback, right color=white, draw=none},
             underlay unbroken=\nestedgapfill,
@@ -435,12 +438,12 @@
             after skip=0pt,
           }%
           \ifdefstring{\afternestedbox}{true}{%
-            \tcbset{top=3pt}%
+            \tcbset{top=6pt}%
           }{%
             \tcbset{top=8pt}%
           }%
           \ifdefstring{\nextisnested}{true}{%
-            \tcbset{bottom=3pt}%
+            \tcbset{bottom=6pt}%
           }{%
             \tcbset{bottom=8pt}%
           }%
@@ -486,6 +489,10 @@
   myreference/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={refline}{refback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
   mysummary/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={sumline}{sumback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
   myexam/.style={enhanced, breakable, boxrule=0pt, frame hidden, arc=0pt, left=10pt, right=0pt, top=8pt, bottom=8pt, before skip=0pt, after skip=0pt, mixable={examline}{examback}, fonttitle=\titlefont\bfseries, attach title to upper, after title={\enspace}},
+  % Full-width environments
+  myfullsummary/.style={mysummary, check odd page, toggle enlargement=evenpage, grow to right by=\marginparsep+\marginparwidth},
+  myfullapplication/.style={myapplication, check odd page, toggle enlargement=evenpage, grow to right by=\marginparsep+\marginparwidth},
+  myfulltheorem/.style={mythm, check odd page, toggle enlargement=evenpage, grow to right by=\marginparsep+\marginparwidth},
 }
 
 % ==============================================================================
@@ -533,23 +540,22 @@
 \fi
 
 \pagestyle{fancy}
+\RequirePackage{calc}
+\fancyheadoffset[LE,RO]{\marginparsep+\marginparwidth}
 \fancyhf{}
 
 \renewcommand{\headrulewidth}{0pt}
-\fancyhead[L]{%
+\fancyhead[LE]{%
   \begin{tikzpicture}[overlay, remember picture]
-    \draw[rulecolor, line width=0.5pt] (0,-0.5em) -- (\textwidth,-0.5em);
+    \draw[rulecolor, line width=0.5pt] (0,-0.5em) -- (\headwidth,-0.5em);
   \end{tikzpicture}%
-  {\small\color{headtext}\sffamily
-    \ifodd\value{page}
-      \docname
-    \else
-      \leftmark
-    \fi
-  }%
+  {\small\color{headtext}\sffamily\thepage\quad\leftmark}%
 }
-\fancyhead[R]{%
-  {\small\color{headtext}\sffamily\thepage}%
+\fancyhead[RO]{%
+  \begin{tikzpicture}[overlay, remember picture]
+    \draw[rulecolor, line width=0.5pt] (0,-0.5em) -- (\headwidth,-0.5em);
+  \end{tikzpicture}%
+  \hfill{\small\color{headtext}\sffamily\rightmark\quad\thepage}%
 }
 
 \fancyfoot{}
@@ -557,11 +563,13 @@
 \fancypagestyle{plain}{%
   \fancyhf{}
   \renewcommand{\headrulewidth}{0pt}
-  \fancyhead[R]{{\small\color{headtext}\sffamily\thepage}}
+  \fancyhead[LE]{{\small\color{headtext}\sffamily\thepage}}
+  \fancyhead[RO]{{\small\color{headtext}\sffamily\thepage}}
 }
 
-% Redefine section mark to include the § symbol in the header
-\renewcommand{\sectionmark}[1]{\markboth{§\,\thesection\quad#1}{}}
+% Redefine section and chapter marks for book class
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{§\,\thesection\quad#1}}
 
 % Bibliography heading fix (avoid uppercase in headers)
 \defbibheading{bibliography}[\refname]{%
@@ -572,6 +580,12 @@
 \titleformat{\part}[display]
 {\normalfont\Huge\titlefont\bfseries\color{accentdark}\filcenter}
 {\partname~\thepart}{0.5em}{}
+[\vspace{0.5em}{\color{rulecolor}\titlerule[2pt]}]
+
+% Chapter styling
+\titleformat{\chapter}[display]
+{\normalfont\Huge\titlefont\bfseries\color{accentdark}}
+{\chaptertitlename~\thechapter}{0.5em}{}
 [\vspace{0.5em}{\color{rulecolor}\titlerule[2pt]}]
 
 % Section styling
@@ -588,6 +602,7 @@
 {\normalfont\normalsize\titlefont\bfseries\color{accent!85!black}}
 {§\,\thesubsubsection}{0.5em}{}
 
+\titlespacing*{\chapter}{0pt}{-1em}{2em}
 \titlespacing*{\section}{0pt}{1.2em}{0.4em}
 \titlespacing*{\subsection}{0pt}{0.4em}{-0.2em}
 \titlespacing*{\subsubsection}{0pt}{0.4em}{-0.2em}
@@ -613,7 +628,16 @@
 % Custom footnote symbols matching Landau style ( *, †, ‡, §, ¶, ||, **, ††, ‡‡ )
 \DefineFNsymbols{landau}{{\ensuremath\ast}{\ensuremath\dagger}{\ensuremath\ddagger}{\ensuremath\mathsection}{\ensuremath\mathparagraph}{\ensuremath\|}{\ensuremath{\ast\ast}}{\ensuremath{\dagger\dagger}}{\ensuremath{\ddagger\ddagger}}}
 \setfnsymbol{landau}
-\AtBeginDocument{\renewcommand{\thefootnote}{\fnsymbol{footnote}}}
+\AtBeginDocument{
+  \renewcommand{\thefootnote}{\fnsymbol{footnote}}
+  % Make sidenotes reset per page and use symbols
+  \MakePerPage{sidenote}
+  \renewcommand{\thesidenote}{\fnsymbol{sidenote}}
+}
+
+% Make sidenote text smaller
+\providecommand{\marginfont}{}
+\renewcommand*{\marginfont}{\footnotesize}
 
 % Stylish footnote formatting
 \renewcommand{\footnoterule}{%
@@ -966,6 +990,16 @@
   \applyenvcolor{appline!90!black}
 }{\end{appbox}\setlastclosedbox{appline}{appback}}
 
+\newtcolorbox{fullappbox}[1][]{myfullapplication, #1}
+\NewDocumentEnvironment{fullapplication_internal}{ O{} }{%
+  \addnestedspace
+  \refstepcounter{applicationctr}%
+  \ifstrempty{#1}%
+  {\begin{fullappbox}[title={\applicationname\ \theapplicationctr.}]}%
+  {\begin{fullappbox}[title={\applicationname\ \theapplicationctr.\ (#1)}]}%
+  \applyenvcolor{appline!90!black}
+}{\end{fullappbox}\setlastclosedbox{appline}{appback}}
+
 \newtcolorbox{histbox}[1][]{myhistory, #1}
 \NewDocumentEnvironment{history_internal}{ O{} }{%
   \addnestedspace
@@ -1006,6 +1040,16 @@
   \applyenvcolor{sumline!90!black}
 }{\end{sumbox}\setlastclosedbox{sumline}{sumback}}
 
+\newtcolorbox{fullsumbox}[1][]{myfullsummary, #1}
+\NewDocumentEnvironment{fullsummary_internal}{ O{} }{%
+  \addnestedspace
+  \refstepcounter{summaryctr}%
+  \ifstrempty{#1}%
+  {\begin{fullsumbox}[title={\summaryname\ \thesummaryctr.}]}%
+  {\begin{fullsumbox}[title={\summaryname\ \thesummaryctr.\ (#1)}]}%
+  \applyenvcolor{sumline!90!black}
+}{\end{fullsumbox}\setlastclosedbox{sumline}{sumback}}
+
 \newtcolorbox{exambox}[1][]{myexam, #1}
 \NewDocumentEnvironment{exam_internal}{ O{} }{%
   \addnestedspace
@@ -1024,6 +1068,16 @@
   {\begin{thmbox}[title={\theoremname.\ (#1)}]}%
   \applyenvcolor{thmline!85!black}\itshape
 }{\end{thmbox}\setlastclosedbox{thmline}{thmback}}
+
+\newtcolorbox{fullthmbox}[1][]{myfulltheorem, #1}
+\NewDocumentEnvironment{fulltheorem_internal}{ O{} }{%
+  \addnestedspace
+  \refstepcounter{theoremctr}%
+  \ifstrempty{#1}%
+  {\begin{fullthmbox}[title={\theoremname.}]}%
+  {\begin{fullthmbox}[title={\theoremname.\ (#1)}]}%
+  \applyenvcolor{thmline!85!black}\itshape
+}{\end{fullthmbox}\setlastclosedbox{thmline}{thmback}}
 
 \NewDocumentEnvironment{lemma*_internal}{ O{} }{%
   \addnestedspace
@@ -1125,6 +1179,15 @@
 \NewDocumentEnvironment{summary}{ O{} +b }
   {\directlua{nested_parser.process_nested_env("summary", false, \luastringN{#1}, \luastringN{#2}, "\isnestedbox")}}{}
 
+\NewDocumentEnvironment{fullsummary}{ O{} +b }
+  {\begin{fullsummary_internal}[#1]#2\end{fullsummary_internal}}{}
+
+\NewDocumentEnvironment{fullapplication}{ O{} +b }
+  {\begin{fullapplication_internal}[#1]#2\end{fullapplication_internal}}{}
+
+\NewDocumentEnvironment{fulltheorem}{ O{} +b }
+  {\begin{fulltheorem_internal}[#1]#2\end{fulltheorem_internal}}{}
+
 
 % Sekce uvnitř boxu „Jak uspět`` --- seznam bez odrážek. Svislé oddělení dělá
 % seznam, nikoli odstavcové zlomy, takže je nezávislé na tom, jak se s~tělem
@@ -1185,7 +1248,7 @@
   \applyenvcolor{proofcolor}%
   {\titlefont\itshape\color{proofcolor}#1.}\enspace\ignorespaces
 }{%
-  \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{proofcolor}\proofended}\par
+  \par\nopagebreak\vspace{0.3em}\hfill{\color{proofcolor}\ensuremath{\blacksquare}}\par
   \end{proofbox}%
   \setlastclosedbox{thmline}{thmback}%
 }
@@ -1250,7 +1313,7 @@
   \applyenvcolor{proofmixcolor}%
   {\titlefont\itshape\color{proofmixcolor}#1.}\enspace\ignorespaces
 }{%
-  \par\nopagebreak\vspace{0.3em}\hfill{\small\itshape\color{proofmixcolor}\proofended}\par
+  \par\nopagebreak\vspace{0.3em}\hfill{\color{proofmixcolor}\ensuremath{\blacksquare}}\par
   \end{nestedproofbox}%
 }
 
@@ -1365,6 +1428,25 @@
   #1
 }
 
+% Inter-environment decoupled text block
+\colorlet{intertextline}{gray!40}
+\colorlet{intertextback}{gray!12}
+\newtcolorbox{intertextbox}[1][]{
+  enhanced,
+  breakable,
+  boxrule=0pt,
+  frame hidden,
+  arc=0pt,
+  left=10pt,
+  right=0pt,
+  top=8pt,
+  bottom=8pt,
+  before skip=0pt,
+  after skip=0pt,
+  mixable={intertextline}{intertextback},
+  #1
+}
+
 
 % ==============================================================================
 %                              Document Settings
@@ -1430,7 +1512,7 @@
     % Title Content - aligned exactly 3cm from the right edge
     \node[anchor=north east, inner sep=0pt]
     at ([xshift=-3cm, yshift=-4cm]current page.north east) {
-      \begin{minipage}{15cm}
+      \begin{minipage}{18cm}
         \raggedleft
         % Optical alignment: larger fonts have larger sidebearings, so we nudge it right slightly
         {\fontsize{64}{72}\selectfont\titlefont\bfseries\color{white}#2\hspace*{-0.04em}\par}
