@@ -2,6 +2,22 @@
 
 This is a reusable, modular LaTeX template for creating beautifully styled lecture notes. It uses LuaLaTeX and a custom geometric design with tailored `tcolorbox` environments for definitions, theorems, problems, and notes.
 
+## Quick Start (Use as a Template)
+
+To use this template for a new project without copying over the Git history, run the following commands in your terminal:
+
+```bash
+# Clone the repository (without history) into your new project folder
+git clone --depth 1 <repository-url> my-new-notes
+
+# Navigate into the folder
+cd my-new-notes
+
+# Remove the old Git tracking and start fresh
+rm -rf .git
+git init
+```
+
 ## Usage
 
 1. Open `main.tex`.

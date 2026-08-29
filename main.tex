@@ -57,7 +57,11 @@ This is some normal text after the theorem.\sidenotemark
 \end{intuition}
 
 \begin{proof}
-  This is the rigorous proof of the theorem.
+  This is the rigorous proof of the theorem. We can also display a massive wide equation that breaks into the margin:
+  
+  \begin{wideequation}
+    \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi} \quad \text{and} \quad \mathcal{F}\{f(t)\} = \int_{-\infty}^{\infty} f(t) e^{-i\omega t} dt \quad \text{across the full page!}
+  \end{wideequation}
 \end{proof}
 
 \begin{algo}[Search Algorithm]
@@ -78,14 +82,18 @@ This is some normal text after the theorem.\sidenotemark
   This theorem is heavily used in structural engineering to calculate load capacities.
 \end{application}
 
-\marginnote{%
+\begin{styledmarginfigure}
   \centering
   \begin{tikzpicture}
     \draw[thick, accent, fill=accent!20] (0,0) circle (1.2cm);
     \node[accentdark, align=center] at (0,0) {\textbf{Tufte}\\\textbf{Margin}};
   \end{tikzpicture}
-  \captionof{figure}{A margin figure placed perfectly in the wide column.}
-}
+  \captionof{figure}{A margin figure perfectly placed and styled in the wide column.}
+\end{styledmarginfigure}
+
+\begin{marginequation}{Euler's Identity in the margin.}
+  e^{i\pi} + 1 = 0
+\end{marginequation}
 
 \begin{history}
   First discovered in 1894, this concept revolutionized the field.

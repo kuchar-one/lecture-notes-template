@@ -1448,6 +1448,42 @@
 }
 
 
+% --- Wide Equation -------------------------------------------------------------
+\newenvironment{wideequation}{%
+  \begin{adjustwidth}{0pt}{-\dimexpr\marginparwidth+\marginparsep\relax}%
+  \begin{equation}%
+}{%
+  \end{equation}%
+  \end{adjustwidth}%
+}
+
+% --- Styled Margin Figure & Table ----------------------------------------------
+\newenvironment{styledmarginfigure}[1][]{%
+  \begin{marginfigure}[#1]%
+}{%
+  \end{marginfigure}%
+}
+
+\newenvironment{styledmargintable}[1][]{%
+  \begin{margintable}[#1]%
+}{%
+  \end{margintable}%
+}
+
+% --- Margin Equation -----------------------------------------------------------
+\DeclareDocumentEnvironment{marginequation}{ m o }{%
+  \IfNoValueTF{#2}{\begin{marginfigure}}{\begin{marginfigure}[#2]}%
+      \begin{equation*}%
+}{%
+      \end{equation*}%
+    \vspace{-\belowdisplayskip}%
+    \vspace{-4pt}%
+    \refstepcounter{equation}%
+    \par\noindent
+    {\marginfont\textbf{Equation \theequation:} #1\par}%
+  \end{marginfigure}%
+}
+
 % ==============================================================================
 %                              Document Settings
 % ==============================================================================
